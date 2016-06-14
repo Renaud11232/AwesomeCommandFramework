@@ -8,7 +8,7 @@ public class SubCommand {
     private CommandExecutor executor;
     private String[] aliases;
 
-    public SubCommand(CommandExecutor executor, String name, String... aliases){
+    public SubCommand(String name, CommandExecutor executor, String... aliases){
         if(executor == null){
             throw new NullPointerException("Could not create a SubCommand, executor was null");
         }
