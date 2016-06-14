@@ -25,11 +25,14 @@ public class ComplexCommandExecutor implements CommandExecutor{
 
     public void addSubCommand(SubCommand subCommand){
         subCommands.put(subCommand.getName(), subCommand.getExecutor());
+        for(String alias : subCommand.getAliases()){
+            subCommands.put(alias, subCommand.getExecutor());
+        }
     }
 
     public void addSubCommands(SubCommand... subCommands){
         for(SubCommand sub : subCommands){
-            this.subCommands.put(sub.getName(), sub.getExecutor());
+            addSubCommand(sub);
         }
     }
 
@@ -45,7 +48,8 @@ public class ComplexCommandExecutor implements CommandExecutor{
             return subCommands.get(strings[0]).onCommand(commandSender, command, s, strings.length == 1 ? new String[0] : Arrays.copyOfRange(strings, 1, strings.length -1));
         }
     }
-
+    //TODO rework this
+    /*
     public TabCompleter getTabCompleter(){
         return new TabCompleter() {
             @Override
@@ -69,5 +73,5 @@ public class ComplexCommandExecutor implements CommandExecutor{
                 return completion;
             }
         };
-    }
+    }*/
 }
