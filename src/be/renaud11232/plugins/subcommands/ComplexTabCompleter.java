@@ -1,27 +1,19 @@
 package be.renaud11232.plugins.subcommands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 
 public class ComplexTabCompleter implements TabCompleter {
 
     private Map<String, TabCompleter> subCompleters;
+    private TabCompleter completer;
 
     public static final TabCompleter DEFAULT_COMPLETER = new TabCompleter() {
         @Override
         public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-            /*List<String> completion = new LinkedList<>();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (strings.length == 0 || player.getName().startsWith(strings[strings.length - 1])) {
-                    completion.add(player.getName());
-                }
-            }
-            return completion;*/
             return null;
         }
     };
@@ -34,11 +26,13 @@ public class ComplexTabCompleter implements TabCompleter {
 
     public ComplexTabCompleter() {
         subCompleters = new HashMap<>();
+        completer = DEFAULT_COMPLETER;
     }
 
-    public ComplexTabCompleter(SubTab... subTabs) {
+    public ComplexTabCompleter(TabCompleter completer, SubTab... subTabs) {
         this();
         addSubTabs(subTabs);
+        setCompleter(completer);
     }
 
     public void addSubTab(SubTab subTab) {
@@ -52,6 +46,10 @@ public class ComplexTabCompleter implements TabCompleter {
         for (SubTab subTab : subTabs) {
             addSubTab(subTab);
         }
+    }
+
+    public void setCompleter(TabCompleter completer){
+        this.completer = completer == null ? DEFAULT_COMPLETER : completer;
     }
 
     @Override
@@ -68,7 +66,11 @@ public class ComplexTabCompleter implements TabCompleter {
                         }
                     }
                 }
-                return completion;
+                if(completion.isEmpty()){
+                    return completer.onTabComplete(commandSender, command, s, strings);
+                }else {
+                    return completion;
+                }
             }
         } else {
             return null;

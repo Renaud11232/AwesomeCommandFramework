@@ -2,6 +2,8 @@ package be.renaud11232.plugins.subcommands;
 
 import org.bukkit.command.CommandExecutor;
 
+import java.util.Arrays;
+
 public class SubCommand {
 
     private String name;
@@ -9,14 +11,14 @@ public class SubCommand {
     private String[] aliases;
 
     public SubCommand(String name, CommandExecutor executor, String... aliases){
-        if(executor == null){
-            throw new NullPointerException("Could not create a SubCommand, executor was null");
-        }
         if(name == null){
             throw new NullPointerException("Could not create a SubCommand, name was null");
         }
         if(name.contains(" ")){
             throw new IllegalArgumentException("Could not create a SubCommand, name contains a \" \" : \"" + name + "\"");
+        }
+        if(aliases == null){
+            throw new NullPointerException("Could not create a SubCommand, aliases was null");
         }
         for(String alias : aliases){
             if(alias.contains(" ")){
@@ -24,7 +26,7 @@ public class SubCommand {
             }
         }
         this.name = name;
-        this.executor = executor;
+        this.executor = executor == null ? ComplexCommandExecutor.DEFAULT_EXECUTOR : executor;
         this.aliases = aliases;
     }
 
@@ -37,7 +39,7 @@ public class SubCommand {
     }
 
     public String[] getAliases(){
-        return aliases;
+        return Arrays.copyOf(aliases, aliases.length);
     }
 
 }

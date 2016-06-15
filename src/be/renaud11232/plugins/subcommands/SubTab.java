@@ -11,14 +11,14 @@ public class SubTab {
     private String[] aliases;
 
     public SubTab(String name, TabCompleter completer, String... aliases) {
-        if (completer == null) {
-            throw new NullPointerException("Could not create a SubTab, completer was null");
-        }
         if (name == null) {
             throw new NullPointerException("Could not create a SubTab, name was null");
         }
         if (name.contains(" ")) {
             throw new IllegalArgumentException("Could not create a SubTab, name contains a \" \" : \"" + name + "\"");
+        }
+        if(aliases == null){
+            throw new NullPointerException("Could not create a SubTab, aliases was null");
         }
         for (String alias : aliases) {
             if (alias.contains(" ")) {
@@ -26,7 +26,7 @@ public class SubTab {
             }
         }
         this.name = name;
-        this.completer = completer;
+        this.completer = completer == null ? ComplexTabCompleter.DEFAULT_COMPLETER : completer;
         this.aliases = aliases;
     }
 

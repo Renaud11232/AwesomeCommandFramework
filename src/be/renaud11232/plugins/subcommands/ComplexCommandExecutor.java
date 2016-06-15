@@ -11,9 +11,22 @@ public class ComplexCommandExecutor implements CommandExecutor{
     private Map<String, CommandExecutor> subCommands;
     private CommandExecutor executor;
 
+    public static final CommandExecutor DEFAULT_EXECUTOR = new CommandExecutor() {
+        @Override
+        public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+            return false;
+        }
+    };
+    public static final CommandExecutor NO_EXECUTOR = new CommandExecutor() {
+        @Override
+        public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+            return true;
+        }
+    };
+
     public ComplexCommandExecutor(){
         subCommands = new HashMap<>();
-        executor = null;
+        executor = DEFAULT_EXECUTOR;
     }
 
     public ComplexCommandExecutor(CommandExecutor executor, SubCommand... subCommands){
@@ -36,13 +49,13 @@ public class ComplexCommandExecutor implements CommandExecutor{
     }
 
     public void setExecutor(CommandExecutor executor){
-        this.executor = executor;
+        this.executor = executor == null ? DEFAULT_EXECUTOR : executor;
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if(strings.length == 0 || !subCommands.containsKey(strings[0])){
-            return executor != null && executor.onCommand(commandSender, command, s, strings);
+            return executor.onCommand(commandSender, command, s, strings);
         }else{
             return subCommands.get(strings[0]).onCommand(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
         }
