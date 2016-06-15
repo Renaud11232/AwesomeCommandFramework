@@ -4,9 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Defines a {@link CommandExecutor} which can execute a command and some {@link SubCommand}s.
@@ -90,7 +88,7 @@ public class ComplexCommandExecutor implements CommandExecutor {
     /**
      * Adds {@link SubCommand}s to this {@link ComplexCommandExecutor}.
      * <p>
-     * If there was a {@link SubCommand} with the same name or if two or more of the given {@link SubCommand}s with the same name,<br/>
+     * If there was a {@link SubCommand} with the same name or if two or more of the given {@link SubCommand}s had the same name,<br/>
      * only the last one is stored.
      * </p>
      *
@@ -125,11 +123,15 @@ public class ComplexCommandExecutor implements CommandExecutor {
      * </li>
      * </ol>
      * </p>
+     * <p>
+     * This means if you have a {@link SubCommand} with a given name, the {@link CommandExecutor} of this {@link ComplexCommandExecutor} will never get that given name as an argument.<br/>
+     * It will always call the {@link SubCommand} executor instead.
+     * </p>
      *
      * @param commandSender the {@link CommandSender}.
-     * @param command the sent {@link Command}.
-     * @param s the alias of the {@link Command}.
-     * @param strings the arguments of the {@link Command}.
+     * @param command       the sent {@link Command}.
+     * @param s             the alias of the {@link Command}.
+     * @param strings       the arguments of the {@link Command}.
      * @return <code>true</code> if the command was successful, <code>false</code> otherwise.
      */
     @Override
