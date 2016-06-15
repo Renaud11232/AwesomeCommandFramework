@@ -17,7 +17,7 @@ public class SubTab {
         if (name.contains(" ")) {
             throw new IllegalArgumentException("Could not create a SubTab, name contains a \" \" : \"" + name + "\"");
         }
-        if(aliases == null){
+        if (aliases == null) {
             throw new NullPointerException("Could not create a SubTab, aliases was null");
         }
         for (String alias : aliases) {

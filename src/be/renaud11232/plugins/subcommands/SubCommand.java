@@ -10,18 +10,18 @@ public class SubCommand {
     private CommandExecutor executor;
     private String[] aliases;
 
-    public SubCommand(String name, CommandExecutor executor, String... aliases){
-        if(name == null){
+    public SubCommand(String name, CommandExecutor executor, String... aliases) {
+        if (name == null) {
             throw new NullPointerException("Could not create a SubCommand, name was null");
         }
-        if(name.contains(" ")){
+        if (name.contains(" ")) {
             throw new IllegalArgumentException("Could not create a SubCommand, name contains a \" \" : \"" + name + "\"");
         }
-        if(aliases == null){
+        if (aliases == null) {
             throw new NullPointerException("Could not create a SubCommand, aliases was null");
         }
-        for(String alias : aliases){
-            if(alias.contains(" ")){
+        for (String alias : aliases) {
+            if (alias.contains(" ")) {
                 throw new IllegalArgumentException("Could not create a SubCommand, at least one of the given aliases contains a \" \" : \"" + alias + "\"");
             }
         }
@@ -30,15 +30,15 @@ public class SubCommand {
         this.aliases = aliases;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public CommandExecutor getExecutor(){
+    public CommandExecutor getExecutor() {
         return executor;
     }
 
-    public String[] getAliases(){
+    public String[] getAliases() {
         return Arrays.copyOf(aliases, aliases.length);
     }
 

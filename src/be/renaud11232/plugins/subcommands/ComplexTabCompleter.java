@@ -8,9 +8,6 @@ import java.util.*;
 
 public class ComplexTabCompleter implements TabCompleter {
 
-    private Map<String, TabCompleter> subCompleters;
-    private TabCompleter completer;
-
     public static final TabCompleter DEFAULT_COMPLETER = new TabCompleter() {
         @Override
         public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -23,6 +20,8 @@ public class ComplexTabCompleter implements TabCompleter {
             return Collections.emptyList();
         }
     };
+    private Map<String, TabCompleter> subCompleters;
+    private TabCompleter completer;
 
     public ComplexTabCompleter() {
         subCompleters = new HashMap<>();
@@ -48,7 +47,7 @@ public class ComplexTabCompleter implements TabCompleter {
         }
     }
 
-    public void setCompleter(TabCompleter completer){
+    public void setCompleter(TabCompleter completer) {
         this.completer = completer == null ? DEFAULT_COMPLETER : completer;
     }
 
@@ -59,16 +58,16 @@ public class ComplexTabCompleter implements TabCompleter {
             if (subCompleters.containsKey(strings[0])) {
                 return subCompleters.get(strings[0]).onTabComplete(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
             } else {
-                if(strings.length == 1) {
+                if (strings.length == 1) {
                     for (String subCommand : subCompleters.keySet()) {
                         if (subCommand.startsWith(strings[0])) {
                             completion.add(subCommand);
                         }
                     }
                 }
-                if(completion.isEmpty()){
+                if (completion.isEmpty()) {
                     return completer.onTabComplete(commandSender, command, s, strings);
-                }else {
+                } else {
                     return completion;
                 }
             }
