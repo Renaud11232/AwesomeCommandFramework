@@ -68,6 +68,7 @@ public class ComplexTabCompleter implements TabCompleter {
                 if (completion.isEmpty()) {
                     return completer.onTabComplete(commandSender, command, s, strings);
                 } else {
+                    Collections.sort(completion);
                     return completion;
                 }
             }
