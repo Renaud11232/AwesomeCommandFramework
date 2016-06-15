@@ -4,23 +4,25 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines a {@link CommandExecutor} which can execute a command and some {@link SubCommand}s.
  * <p>
- * A {@link ComplexCommandExecutor} works as follows :<br/>
+ * A {@link ComplexCommandExecutor} works as follows :
+ * </p>
  * <ol>
  * <li>
- * If there's no argument or the first argument does not match a {@link SubCommand} name :<br/>
+ * If there's no argument or the first argument does not match a {@link SubCommand} name :<br>
  * The {@link CommandExecutor} of this {@link ComplexCommandExecutor} is executed.
  * </li>
  * <li>
- * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br/>
+ * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br>
  * The {@link CommandExecutor} of the matching {@link SubCommand} is executed.
  * </li>
  * </ol>
- * </p>
  */
 public class ComplexCommandExecutor implements CommandExecutor {
 
@@ -30,22 +32,12 @@ public class ComplexCommandExecutor implements CommandExecutor {
      * It does nothing and always returns <code>false</code>.
      * </p>
      */
-    public static final CommandExecutor DEFAULT_EXECUTOR = new CommandExecutor() {
-        @Override
-        public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-            return false;
-        }
-    };
+    public static final CommandExecutor DEFAULT_EXECUTOR = (commandSender, command, s, strings) -> false;
 
     /**
      * {@link CommandExecutor} that does nothing and always returns <code>true</code>.
      */
-    public static final CommandExecutor NO_EXECUTOR = new CommandExecutor() {
-        @Override
-        public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-            return true;
-        }
-    };
+    public static final CommandExecutor NO_EXECUTOR = (commandSender, command, s, strings) -> true;
 
     private Map<String, CommandExecutor> subCommands;
     private CommandExecutor executor;
@@ -88,7 +80,7 @@ public class ComplexCommandExecutor implements CommandExecutor {
     /**
      * Adds {@link SubCommand}s to this {@link ComplexCommandExecutor}.
      * <p>
-     * If there was a {@link SubCommand} with the same name or if two or more of the given {@link SubCommand}s had the same name,<br/>
+     * If there was a {@link SubCommand} with the same name or if two or more of the given {@link SubCommand}s had the same name,<br>
      * only the last one is stored.
      * </p>
      *
@@ -103,7 +95,7 @@ public class ComplexCommandExecutor implements CommandExecutor {
     /**
      * Sets the {@link CommandExecutor} of this {@link ComplexCommandExecutor}.
      *
-     * @param executor the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor}.
+     * @param executor the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor} if the given value is <code>null</code>, uses DEFAULT_EXECUTOR.
      */
     public void setExecutor(CommandExecutor executor) {
         this.executor = executor == null ? DEFAULT_EXECUTOR : executor;
@@ -111,20 +103,18 @@ public class ComplexCommandExecutor implements CommandExecutor {
 
     /**
      * Executes this {@link ComplexCommandExecutor}.
-     * <p>
      * <ol>
      * <li>
-     * If there's no argument or the first argument does not match a {@link SubCommand} name :<br/>
+     * If there's no argument or the first argument does not match a {@link SubCommand} name :<br>
      * The {@link CommandExecutor} of this {@link ComplexCommandExecutor} is executed.
      * </li>
      * <li>
-     * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br/>
+     * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br>
      * The {@link CommandExecutor} of the matching {@link SubCommand} is executed.
      * </li>
      * </ol>
-     * </p>
      * <p>
-     * This means if you have a {@link SubCommand} with a given name, the {@link CommandExecutor} of this {@link ComplexCommandExecutor} will never get that given name as an argument.<br/>
+     * This means if you have a {@link SubCommand} with a given name, the {@link CommandExecutor} of this {@link ComplexCommandExecutor} will never get that given name as an argument.<br>
      * It will always call the {@link SubCommand} executor instead.
      * </p>
      *
