@@ -10,9 +10,13 @@
 
 package be.renaud11232.plugins.subcommands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.permissions.Permission;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Defines a {@link ComplexCommandExecutor}'s {@link SubCommand}.
@@ -20,8 +24,9 @@ import java.util.Arrays;
 public class SubCommand {
 
     private String name;
+    private String permission;
     private CommandExecutor executor;
-    private String[] aliases;
+    private List<String> aliases;
 
     /**
      * Construncts a new {@link SubCommand} with a given name, {@link CommandExecutor}, and some aliases.
@@ -33,26 +38,19 @@ public class SubCommand {
      * @throws IllegalArgumentException if the name or one of the aliases contains a space.
      */
     public SubCommand(String name, CommandExecutor executor, String... aliases) {
-        if (name == null) {
-            throw new NullPointerException("Could not create a SubCommand, name was null");
-        }
-        if (name.contains(" ")) {
-            throw new IllegalArgumentException("Could not create a SubCommand, name contains a \" \" : \"" + name + "\"");
-        }
-        if (aliases == null) {
-            throw new NullPointerException("Could not create a SubCommand, aliases was null");
-        }
-        for (String alias : aliases) {
-            if (alias == null) {
-                throw new NullPointerException("Could not create a SubCommand, at least on of the given aliases was null");
-            }
-            if (alias.contains(" ")) {
-                throw new IllegalArgumentException("Could not create a SubCommand, at least one of the given aliases contains a \" \" : \"" + alias + "\"");
-            }
-        }
-        this.name = name;
-        this.executor = executor == null ? ComplexCommandExecutor.DEFAULT_EXECUTOR : executor;
-        this.aliases = Arrays.copyOf(aliases, aliases.length);
+        this(name, (String) null, executor, aliases);
+    }
+
+    public SubCommand(String name, Permission permission, CommandExecutor executor, String... aliases){
+        this(name, permission.getName(), executor, aliases);
+    }
+
+    public SubCommand(String name, String permission, CommandExecutor executor, String... aliases) {
+        setName(name);
+        setPermission(permission);
+        setExecutor(executor);
+        this.aliases = new ArrayList<>();
+        addAliases(aliases);
     }
 
     /**
@@ -64,6 +62,26 @@ public class SubCommand {
         return name;
     }
 
+    public void setName(String name){
+        Objects.requireNonNull(name, "Could not set the SubCommand name, it was null");
+        if (name.contains(" ")) {
+            throw new IllegalArgumentException("Could not set the SubCommand name, name contains a \" \" : \"" + name + "\"");
+        }
+        this.name = name;
+    }
+
+    public String getPermission(){
+        return permission;
+    }
+
+    public void setPermission(String permission){
+        this.permission = permission;
+    }
+
+    public void setPermission(Permission permission){
+        this.permission = permission.getName();
+    }
+
     /**
      * Gets the {@link CommandExecutor} of this {@link SubCommand}.
      *
@@ -73,13 +91,51 @@ public class SubCommand {
         return executor;
     }
 
+    public void setExecutor(CommandExecutor executor){
+        this.executor = (sender, command, alias, args) -> {
+            if(permission == null || sender.hasPermission(permission)){
+                if(executor == null){
+                    return ComplexCommandExecutor.DEFAULT_EXECUTOR.onCommand(sender, command, alias, args);
+                }else{
+                    return executor.onCommand(sender, command, alias, args);
+                }
+            }else{
+                sender.sendMessage(ChatColor.RED + "Sorry, you don't have permission to use that command");
+                return true;
+            }
+        };
+    }
+
     /**
      * Gets all the aliases of this {@link SubCommand}.
      *
      * @return a copy the aliases of this {@link SubCommand}.
      */
-    public String[] getAliases() {
-        return Arrays.copyOf(aliases, aliases.length);
+    public List<String> getAliases() {
+        return new ArrayList<>(aliases);
+    }
+
+    public void addAlias(String alias){
+        Objects.requireNonNull(alias, "Could not add a SubCommand alias, alias was null");
+        if (alias.contains(" ")) {
+            throw new IllegalArgumentException("Could not add a SubCommand alias, alias contains a \" \" : \"" + alias + "\"");
+        }
+        aliases.add(alias);
+    }
+
+    public void addAliases(String... aliases){
+        Objects.requireNonNull(aliases, "Could not add SubCommand aliases, aliases was null");
+        for (String alias : aliases) {
+            addAlias(alias);
+        }
+    }
+
+    public void clearAliases(){
+        aliases.clear();
+    }
+
+    public boolean removeAlias(String alias){
+        return aliases.remove(alias);
     }
 
 }
