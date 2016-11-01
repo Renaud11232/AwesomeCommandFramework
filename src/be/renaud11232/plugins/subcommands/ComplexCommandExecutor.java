@@ -10,9 +10,11 @@
 
 package be.renaud11232.plugins.subcommands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,27 +51,66 @@ public class ComplexCommandExecutor implements CommandExecutor {
      */
     public static final CommandExecutor NO_EXECUTOR = (commandSender, command, s, strings) -> true;
 
-    private Map<String, CommandExecutor> subCommands;
+    private String permission;
     private CommandExecutor executor;
+    private Map<String, CommandExecutor> subCommands;
 
-    /**
-     * Constructs a new {@link ComplexCommandExecutor} with DEFAULT_EXECUTOR as executor and no {@link SubCommand}s.
-     */
-    public ComplexCommandExecutor() {
-        subCommands = new HashMap<>();
-        executor = DEFAULT_EXECUTOR;
+    public ComplexCommandExecutor(SubCommand... subCommands){
+        this((String) null, null, subCommands);
+    }
+
+    public ComplexCommandExecutor(String permission, SubCommand... subCommands){
+        this(permission, null, subCommands);
+    }
+
+    public ComplexCommandExecutor(Permission permission, SubCommand... subCommands){
+        this(permission, null, subCommands);
+    }
+
+    public ComplexCommandExecutor(CommandExecutor executor, SubCommand... subCommands){
+        this((String) null, executor, subCommands);
+    }
+
+    public ComplexCommandExecutor(String permission, CommandExecutor executor, SubCommand... subCommands){
+        this.subCommands = new HashMap<>();
+        setPermission(permission);
+        setExecutor(executor);
+        addSubCommands(subCommands);
+    }
+
+    public ComplexCommandExecutor(Permission permission, CommandExecutor executor, SubCommand... subCommands){
+        this((String) null, executor, subCommands);
+        setPermission(permission);
+    }
+
+    public String getPermission(){
+        return permission;
+    }
+
+    public void setPermission(String permission){
+        this.permission = permission;
+    }
+
+    public void setPermission(Permission permission){
+        this.permission = permission == null ? null : permission.getName();
+    }
+
+    public CommandExecutor getExecutor(){
+        return executor;
     }
 
     /**
-     * Constructs a new {@link ComplexCommandExecutor} with a given {@link CommandExecutor} and some {@link SubCommand}s.
+     * Sets the {@link CommandExecutor} of this {@link ComplexCommandExecutor}.
      *
-     * @param executor    the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor}.
-     * @param subCommands the {@link SubCommand}s to set for this {@link ComplexCommandExecutor}.
+     * @param executor the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor} if the given value is <code>null</code>, uses DEFAULT_EXECUTOR.
      */
-    public ComplexCommandExecutor(CommandExecutor executor, SubCommand... subCommands) {
-        this();
-        setExecutor(executor);
-        addSubCommands(subCommands);
+    public void setExecutor(CommandExecutor executor) {
+        this.executor = executor == null ? DEFAULT_EXECUTOR : executor;
+    }
+
+    public void removeSubCommand(SubCommand subCommand){
+        subCommands.remove(subCommand.getName());
+        subCommand.getAliases().forEach(subCommands::remove);
     }
 
     /**
@@ -82,9 +123,9 @@ public class ComplexCommandExecutor implements CommandExecutor {
      */
     public void addSubCommand(SubCommand subCommand) {
         subCommands.put(subCommand.getName(), subCommand.getExecutor());
-        for (String alias : subCommand.getAliases()) {
+        subCommand.getAliases().forEach(alias -> {
             subCommands.put(alias, subCommand.getExecutor());
-        }
+        });
     }
 
     /**
@@ -100,15 +141,6 @@ public class ComplexCommandExecutor implements CommandExecutor {
         for (SubCommand sub : subCommands) {
             addSubCommand(sub);
         }
-    }
-
-    /**
-     * Sets the {@link CommandExecutor} of this {@link ComplexCommandExecutor}.
-     *
-     * @param executor the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor} if the given value is <code>null</code>, uses DEFAULT_EXECUTOR.
-     */
-    public void setExecutor(CommandExecutor executor) {
-        this.executor = executor == null ? DEFAULT_EXECUTOR : executor;
     }
 
     /**
@@ -136,10 +168,15 @@ public class ComplexCommandExecutor implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (strings.length == 0 || !subCommands.containsKey(strings[0])) {
-            return executor.onCommand(commandSender, command, s, strings);
-        } else {
-            return subCommands.get(strings[0]).onCommand(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
+        if(permission == null || commandSender.hasPermission(permission)) {
+            if (strings.length == 0 || !subCommands.containsKey(strings[0])) {
+                return executor.onCommand(commandSender, command, s, strings);
+            } else {
+                return subCommands.get(strings[0]).onCommand(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
+            }
+        } else{
+            commandSender.sendMessage(ChatColor.RED + "Sorry, you don't have permission to use that command");
+            return true;
         }
     }
 }

@@ -28,28 +28,32 @@ public class SubCommand {
     private CommandExecutor executor;
     private List<String> aliases;
 
-    /**
-     * Construncts a new {@link SubCommand} with a given name, {@link CommandExecutor}, and some aliases.
-     *
-     * @param name     the name of the {@link SubCommand}.
-     * @param executor the {@link CommandExecutor} of the {@link SubCommand}, ComplexCommandExecutor.DEFAULT_EXECUTOR is used if the value is <code>null</code>.
-     * @param aliases  the aliases of the {@link SubCommand}.
-     * @throws NullPointerException     if the name, the aliases array or one of the aliases is null.
-     * @throws IllegalArgumentException if the name or one of the aliases contains a space.
-     */
-    public SubCommand(String name, CommandExecutor executor, String... aliases) {
+    public SubCommand(String name, String... aliases){
+        this(name, (String) null, null, aliases);
+    }
+
+    public SubCommand(String name, String permission, String... aliases){
+        this(name, permission, null, aliases);
+    }
+
+    public SubCommand(String name, Permission permission, String... aliases){
+        this(name, permission, null, aliases);
+    }
+
+    public SubCommand(String name, CommandExecutor executor, String... aliases){
         this(name, (String) null, executor, aliases);
     }
 
-    public SubCommand(String name, Permission permission, CommandExecutor executor, String... aliases){
-        this(name, permission.getName(), executor, aliases);
+    public SubCommand(String name, Permission permission, CommandExecutor executor, String... aliases) {
+        this(name, (String) null, executor, aliases);
+        setPermission(permission);
     }
 
     public SubCommand(String name, String permission, CommandExecutor executor, String... aliases) {
+        this.aliases = new ArrayList<>();
         setName(name);
         setPermission(permission);
         setExecutor(executor);
-        this.aliases = new ArrayList<>();
         addAliases(aliases);
     }
 
@@ -79,7 +83,7 @@ public class SubCommand {
     }
 
     public void setPermission(Permission permission){
-        this.permission = permission.getName();
+        this.permission = permission == null ? null : permission.getName();
     }
 
     /**
@@ -128,10 +132,6 @@ public class SubCommand {
         for (String alias : aliases) {
             addAlias(alias);
         }
-    }
-
-    public void clearAliases(){
-        aliases.clear();
     }
 
     public boolean removeAlias(String alias){
