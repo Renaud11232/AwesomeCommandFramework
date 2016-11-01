@@ -64,16 +64,16 @@ public class ComplexTabCompleter extends ComplexElement<TabCompleter> implements
         super(permission, subElements);
     }
 
-    public ComplexTabCompleter(TabCompleter executor, SubElement<TabCompleter>... subElements) {
-        super(executor, subElements);
+    public ComplexTabCompleter(TabCompleter element, SubElement<TabCompleter>... subElements) {
+        super(element, subElements);
     }
 
-    public ComplexTabCompleter(String permission, TabCompleter executor, SubElement<TabCompleter>... subElements) {
-        super(permission, executor, subElements);
+    public ComplexTabCompleter(String permission, TabCompleter element, SubElement<TabCompleter>... subElements) {
+        super(permission, element, subElements);
     }
 
-    public ComplexTabCompleter(Permission permission, TabCompleter executor, SubElement<TabCompleter>... subElements) {
-        super(permission, executor, subElements);
+    public ComplexTabCompleter(Permission permission, TabCompleter element, SubElement<TabCompleter>... subElements) {
+        super(permission, element, subElements);
     }
 
     @Override

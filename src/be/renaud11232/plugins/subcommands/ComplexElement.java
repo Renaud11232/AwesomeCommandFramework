@@ -34,19 +34,19 @@ public abstract class ComplexElement<T> implements NullTransformer<T> {
         this(permission, null, subElements);
     }
 
-    public ComplexElement(T executor, SubElement<T>... subElements){
-        this((String) null, executor, subElements);
+    public ComplexElement(T element, SubElement<T>... subElements){
+        this((String) null, element, subElements);
     }
 
-    public ComplexElement(String permission, T executor, SubElement<T>... subElements){
+    public ComplexElement(String permission, T element, SubElement<T>... subElements){
         this.subElements = new HashMap<>();
         setPermission(permission);
-        set(executor);
+        set(element);
         addSubElements(subElements);
     }
 
-    public ComplexElement(Permission permission, T executor, SubElement<T>... subElements){
-        this((String) null, executor, subElements);
+    public ComplexElement(Permission permission, T element, SubElement<T>... subElements){
+        this((String) null, element, subElements);
         setPermission(permission);
     }
 
