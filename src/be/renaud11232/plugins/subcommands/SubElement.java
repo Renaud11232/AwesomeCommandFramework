@@ -10,47 +10,46 @@
 
 package be.renaud11232.plugins.subcommands;
 
-import org.bukkit.command.TabCompleter;
 import org.bukkit.permissions.Permission;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-/**
- * Defines a {@link ComplexTabCompleter}'s {@link SubTab}.
- */
-public class SubTab {
+public abstract class SubElement<T> {
 
     private String name;
     private String permission;
-    private TabCompleter completer;
+    private T element;
     private List<String> aliases;
 
-    public SubTab(String name, String...aliases){
+
+    public SubElement(String name, String...aliases){
         this(name, (String) null, null, aliases);
     }
 
-    public SubTab(String name, String permission, String... aliases){
+    public SubElement(String name, String permission, String... aliases){
         this(name, permission, null, aliases);
     }
 
-    public SubTab(String name, Permission permission, String... aliases){
+    public SubElement(String name, Permission permission, String... aliases){
         this(name, permission, null, aliases);
     }
 
-    public SubTab(String name, TabCompleter completer, String... aliases){
-        this(name, (String) null, completer, aliases);
+    public SubElement(String name, T element, String... aliases){
+        this(name, (String) null, element, aliases);
     }
 
-    public SubTab(String name, Permission permission, TabCompleter completer, String... aliases){
-        this(name, (String) null, completer, aliases);
+    public SubElement(String name, Permission permission, T element, String... aliases){
+        this(name, (String) null, element, aliases);
         setPermission(permission);
     }
 
-    public SubTab(String name, String permission, TabCompleter completer, String... aliases){
+    public SubElement(String name, String permission, T element, String... aliases){
         this.aliases = new ArrayList<>();
         setName(name);
         setPermission(permission);
-        setCompleter(completer);
+        setElement(element);
         addAliases(aliases);
     }
 
@@ -79,28 +78,11 @@ public class SubTab {
         this.permission = permission == null ? null : permission.getName();
     }
 
-    /**
-     * Gets the {@link TabCompleter} of this {@link SubTab}.
-     *
-     * @return the {@link TabCompleter} of this {@link SubTab}.
-     */
-    public TabCompleter getCompleter() {
-        return completer;
+    public T getElement() {
+        return element;
     }
 
-    public void setCompleter(TabCompleter completer){
-        this.completer = (commandSender, command, alias, args) -> {
-            if(permission == null || commandSender.hasPermission(permission)){
-                if(completer == null){
-                    return ComplexTabCompleter.DEFAULT_COMPLETER.onTabComplete(commandSender, command, alias, args);
-                }else{
-                    return completer.onTabComplete(commandSender, command, alias, args);
-                }
-            }else{
-                return ComplexTabCompleter.NO_TAB_COMPLETER.onTabComplete(commandSender, command, alias, args);
-            }
-        };
-    }
+    public abstract void setElement(T element);
 
     /**
      * Gets all the aliases of this {@link SubTab}.
@@ -129,4 +111,5 @@ public class SubTab {
     public boolean removeAlias(String alias){
         return aliases.remove(alias);
     }
+
 }
