@@ -23,7 +23,6 @@ public abstract class SubElement<T> {
     private T element;
     private List<String> aliases;
 
-
     public SubElement(String name, String...aliases){
         this(name, (String) null, null, aliases);
     }
@@ -49,25 +48,24 @@ public abstract class SubElement<T> {
         this.aliases = new ArrayList<>();
         setName(name);
         setPermission(permission);
-        setElement(element);
+        set(element);
         addAliases(aliases);
     }
 
-    /**
-     * Gets the name of this {@link SubTab}.
-     *
-     * @return the name of this {@link SubTab}.
-     */
     public String getName() {
         return name;
     }
 
     public void setName(String name){
-        Objects.requireNonNull(name, "Could not set the SubTab name, it was null");
+        Objects.requireNonNull(name, "Could not set the " + getClass().getSimpleName() + " name, it was null");
         if(name.contains(" ")){
-            throw new IllegalArgumentException("Could not set the SubTab name, name contains a \" \" : \"" + name + "\"");
+            throw new IllegalArgumentException("Could not set the " + getClass().getSimpleName() + " name, name contains a \" \" : \"" + name + "\"");
         }
         this.name = name;
+    }
+
+    public String getPermission(){
+        return permission;
     }
 
     public void setPermission(String permission){
@@ -78,31 +76,30 @@ public abstract class SubElement<T> {
         this.permission = permission == null ? null : permission.getName();
     }
 
-    public T getElement() {
+    public T get() {
         return element;
     }
 
-    public abstract void setElement(T element);
+    public void set(T element){
+        this.element = transformElement(element);
+    }
 
-    /**
-     * Gets all the aliases of this {@link SubTab}.
-     *
-     * @return a copy the aliases of this {@link SubTab}.
-     */
+    protected abstract T transformElement(T element);
+
     public List<String> getAliases() {
         return new ArrayList<>(aliases);
     }
 
     public void addAlias(String alias){
-        Objects.requireNonNull(alias, "Could not add a SubTab alias, alias was null");
+        Objects.requireNonNull(alias, "Could not add a " + getClass().getSimpleName() + " alias, alias was null");
         if(alias.contains(" ")) {
-            throw new IllegalArgumentException("Could not add a SubTab alias, alias contains a \" \" : \"" + alias + "\"");
+            throw new IllegalArgumentException("Could not add a " + getClass().getSimpleName() + " alias, alias contains a \" \" : \"" + alias + "\"");
         }
         aliases.add(alias);
     }
 
     public void addAliases(String... aliases){
-        Objects.requireNonNull(aliases, "Could not add SubTab aliases, aliases was null");
+        Objects.requireNonNull(aliases, "Could not add " + getClass().getSimpleName() + " aliases, aliases was null");
         for(String alias : aliases){
             addAliases(alias);
         }

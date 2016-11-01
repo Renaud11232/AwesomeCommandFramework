@@ -13,6 +13,7 @@ package be.renaud11232.plugins.subcommands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.permissions.Permission;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ import java.util.*;
  * </li>
  * </ol>
  */
-public class ComplexTabCompleter implements TabCompleter {
+public class ComplexTabCompleter extends ComplexElement<TabCompleter> implements TabCompleter {
 
     /**
      * {@link TabCompleter} that works the same as the default {@link TabCompleter}.
@@ -51,114 +52,58 @@ public class ComplexTabCompleter implements TabCompleter {
      */
     public static final TabCompleter NO_TAB_COMPLETER = (commandSender, command, s, strings) -> Collections.emptyList();
 
-    private Map<String, TabCompleter> subCompleters;
-    private TabCompleter completer;
-
-    /**
-     * Constructs a new {@link ComplexTabCompleter} with DEFAULT_COMPLETER as completer and no {@link SubTab}s.
-     */
-    public ComplexTabCompleter() {
-        subCompleters = new HashMap<>();
-        completer = DEFAULT_COMPLETER;
+    public ComplexTabCompleter(SubElement<TabCompleter>... subElements) {
+        super(subElements);
     }
 
-    /**
-     * Constructs a new {@link ComplexTabCompleter} with a given {@link TabCompleter} and some {@link SubTab}s.
-     *
-     * @param completer the {@link TabCompleter} to set for this {@link ComplexTabCompleter}.
-     * @param subTabs   the {@link SubTab}s to set for this {@link ComplexTabCompleter}.
-     */
-    public ComplexTabCompleter(TabCompleter completer, SubTab... subTabs) {
-        this();
-        addSubTabs(subTabs);
-        setCompleter(completer);
+    public ComplexTabCompleter(String permission, SubElement<TabCompleter>... subElements) {
+        super(permission, subElements);
     }
 
-    /**
-     * Adds a {@link SubTab} to this {@link ComplexTabCompleter}.
-     * <p>
-     * If there was a {@link SubTab} with the same name, the old {@link SubTab} is replaced by the new one.
-     * </p>
-     *
-     * @param subTab the {@link SubTab} to add.
-     */
-    public void addSubTab(SubTab subTab) {
-        subCompleters.put(subTab.getName(), subTab.getCompleter());
-        for (String alias : subTab.getAliases()) {
-            subCompleters.put(alias, subTab.getCompleter());
-        }
+    public ComplexTabCompleter(Permission permission, SubElement<TabCompleter>... subElements) {
+        super(permission, subElements);
     }
 
-    /**
-     * Adds {@link SubTab}s to this {@link ComplexTabCompleter}.
-     * <p>
-     * If there was a {@link SubTab} with the same name or if two or mode of the given {@link SubTab}s had the same name;<br>
-     * only the last one is stored.
-     * </p>
-     *
-     * @param subTabs the {@link SubTab}s to add.
-     */
-    public void addSubTabs(SubTab... subTabs) {
-        for (SubTab subTab : subTabs) {
-            addSubTab(subTab);
-        }
+    public ComplexTabCompleter(TabCompleter executor, SubElement<TabCompleter>... subElements) {
+        super(executor, subElements);
     }
 
-    /**
-     * Sets the {@link TabCompleter} for this {@link ComplexTabCompleter}.
-     *
-     * @param completer the {@link TabCompleter} to set for this {@link ComplexTabCompleter} if the given value is <code>null</code>, uses DEFAULT_COMPLETER.
-     */
-    public void setCompleter(TabCompleter completer) {
-        this.completer = completer == null ? DEFAULT_COMPLETER : completer;
+    public ComplexTabCompleter(String permission, TabCompleter executor, SubElement<TabCompleter>... subElements) {
+        super(permission, executor, subElements);
     }
 
-    /**
-     * Gives the list of possible completions for a typed command.
-     * <ol>
-     * <li>
-     * If the first argument if the name of a {@link SubTab} :<br>
-     * Gives the list of possible completions for that {@link SubTab}.
-     * </li>
-     * <li>
-     * If there's only one argument that is NOT the name of a {@link SubTab} :<br>
-     * Adds all the {@link SubTab}s names beginning with that argument to the completion list.
-     * </li>
-     * <li>
-     * If no {@link SubTab} names were starting with the given argument :<br>
-     * Gives the list of completion returned by the {@link TabCompleter} of this {@link ComplexTabCompleter}.
-     * </li>
-     * </ol>
-     * <p>
-     * This means that it will first look for {@link SubTab} name completion.<br>
-     * And only if no {@link SubTab} could be completed, looks for this' {@link TabCompleter} completion.
-     * </p>
-     *
-     * @param commandSender the {@link CommandSender}.
-     * @param command       the sent {@link Command}.
-     * @param s             the alias of this {@link Command}.
-     * @param strings       the arguments of the {@link Command}.
-     * @return a list of possible completions or null for the default Bukkit completion.
-     */
+    public ComplexTabCompleter(Permission permission, TabCompleter executor, SubElement<TabCompleter>... subElements) {
+        super(permission, executor, subElements);
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (strings.length > 0) {
+        //if (strings.length > 0) {
+        if(getPermission() == null || commandSender.hasPermission(getPermission())) {
             List<String> completion = new LinkedList<>();
-            if (subCompleters.containsKey(strings[0])) {
-                return subCompleters.get(strings[0]).onTabComplete(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
+            if (getSubElements().containsKey(strings[0])) {
+                return getSubElements().get(strings[0]).onTabComplete(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
             } else {
                 if (strings.length == 1) {
-                    subCompleters.keySet().stream().filter(subCommand -> subCommand.startsWith(strings[0])).forEach(completion::add);
+                    getSubElements().keySet().stream().filter(subCommand -> subCommand.startsWith(strings[0])).forEach(completion::add);
                 }
                 if (completion.isEmpty()) {
-                    return completer.onTabComplete(commandSender, command, s, strings);
+                    return get().onTabComplete(commandSender, command, s, strings);
                 } else {
                     Collections.sort(completion);
                     return completion;
                 }
             }
-        } else {
-            return null;
+        }else{
+            return NO_TAB_COMPLETER.onTabComplete(commandSender, command, s, strings);
         }
+        /*} else {
+            return null;
+        }*/
+    }
+
+    @Override
+    protected TabCompleter transformElement(TabCompleter element) {
+        return element == null ? DEFAULT_COMPLETER : element;
     }
 }

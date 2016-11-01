@@ -122,9 +122,9 @@ public class ComplexCommandExecutor implements CommandExecutor {
      * @param subCommand the {@link SubCommand} to add.
      */
     public void addSubCommand(SubCommand subCommand) {
-        subCommands.put(subCommand.getName(), subCommand.getExecutor());
+        subCommands.put(subCommand.getName(), subCommand.get());
         subCommand.getAliases().forEach(alias -> {
-            subCommands.put(alias, subCommand.getExecutor());
+            subCommands.put(alias, subCommand.get());
         });
     }
 
