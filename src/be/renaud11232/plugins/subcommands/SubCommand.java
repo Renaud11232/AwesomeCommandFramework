@@ -44,7 +44,7 @@ public class SubCommand extends SubElement<CommandExecutor> {
     }
 
     @Override
-    protected CommandExecutor transformElement(CommandExecutor element) {
+    public CommandExecutor transformNull(CommandExecutor element) {
         return (sender, command, alias, args) -> {
             if(getPermission() == null || sender.hasPermission(getPermission())){
                 if(element == null){

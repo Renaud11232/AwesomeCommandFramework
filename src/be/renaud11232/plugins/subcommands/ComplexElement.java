@@ -16,7 +16,7 @@ import org.bukkit.permissions.Permission;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ComplexElement<T> {
+public abstract class ComplexElement<T> implements NullTransformer<T> {
 
     private String permission;
     private T element;
@@ -67,10 +67,8 @@ public abstract class ComplexElement<T> {
     }
 
     public void set(T element) {
-        this.element = transformElement(element);
+        this.element = transformNull(element);
     }
-
-    protected abstract T transformElement(T element);
 
     protected Map<String, T> getSubElements(){
         return subElements;
@@ -86,6 +84,7 @@ public abstract class ComplexElement<T> {
             subElements.put(alias, subElement.get());
         });
     }
+
     public void addSubElements(SubElement<T>... subElements) {
         for (SubElement<T> sub : subElements) {
             addSubElement(sub);

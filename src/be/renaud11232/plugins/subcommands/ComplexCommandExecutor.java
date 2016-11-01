@@ -17,8 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Defines a {@link CommandExecutor} which can execute a command and some {@link SubCommand}s.
@@ -36,7 +34,7 @@ import java.util.Map;
  * </li>
  * </ol>
  */
-public class ComplexCommandExecutor implements CommandExecutor {
+public class ComplexCommandExecutor extends ComplexElement<CommandExecutor> implements CommandExecutor {
 
     /**
      * {@link CommandExecutor} that works the same as the default {@link CommandExecutor}.
@@ -51,96 +49,28 @@ public class ComplexCommandExecutor implements CommandExecutor {
      */
     public static final CommandExecutor NO_EXECUTOR = (commandSender, command, s, strings) -> true;
 
-    private String permission;
-    private CommandExecutor executor;
-    private Map<String, CommandExecutor> subCommands;
-
-    public ComplexCommandExecutor(SubCommand... subCommands){
-        this((String) null, null, subCommands);
+    public ComplexCommandExecutor(SubElement<CommandExecutor>... subElements) {
+        super(subElements);
     }
 
-    public ComplexCommandExecutor(String permission, SubCommand... subCommands){
-        this(permission, null, subCommands);
+    public ComplexCommandExecutor(String permission, SubElement<CommandExecutor>... subElements) {
+        super(permission, subElements);
     }
 
-    public ComplexCommandExecutor(Permission permission, SubCommand... subCommands){
-        this(permission, null, subCommands);
+    public ComplexCommandExecutor(Permission permission, SubElement<CommandExecutor>... subElements) {
+        super(permission, subElements);
     }
 
-    public ComplexCommandExecutor(CommandExecutor executor, SubCommand... subCommands){
-        this((String) null, executor, subCommands);
+    public ComplexCommandExecutor(CommandExecutor executor, SubElement<CommandExecutor>... subElements) {
+        super(executor, subElements);
     }
 
-    public ComplexCommandExecutor(String permission, CommandExecutor executor, SubCommand... subCommands){
-        this.subCommands = new HashMap<>();
-        setPermission(permission);
-        setExecutor(executor);
-        addSubCommands(subCommands);
+    public ComplexCommandExecutor(String permission, CommandExecutor executor, SubElement<CommandExecutor>... subElements) {
+        super(permission, executor, subElements);
     }
 
-    public ComplexCommandExecutor(Permission permission, CommandExecutor executor, SubCommand... subCommands){
-        this((String) null, executor, subCommands);
-        setPermission(permission);
-    }
-
-    public String getPermission(){
-        return permission;
-    }
-
-    public void setPermission(String permission){
-        this.permission = permission;
-    }
-
-    public void setPermission(Permission permission){
-        this.permission = permission == null ? null : permission.getName();
-    }
-
-    public CommandExecutor getExecutor(){
-        return executor;
-    }
-
-    /**
-     * Sets the {@link CommandExecutor} of this {@link ComplexCommandExecutor}.
-     *
-     * @param executor the {@link CommandExecutor} to set for this {@link ComplexCommandExecutor} if the given value is <code>null</code>, uses DEFAULT_EXECUTOR.
-     */
-    public void setExecutor(CommandExecutor executor) {
-        this.executor = executor == null ? DEFAULT_EXECUTOR : executor;
-    }
-
-    public void removeSubCommand(SubCommand subCommand){
-        subCommands.remove(subCommand.getName());
-        subCommand.getAliases().forEach(subCommands::remove);
-    }
-
-    /**
-     * Adds a {@link SubCommand} to this {@link ComplexCommandExecutor}.
-     * <p>
-     * If there was a {@link SubCommand} with the same name, the old {@link SubCommand} is replaced by the new one.
-     * </p>
-     *
-     * @param subCommand the {@link SubCommand} to add.
-     */
-    public void addSubCommand(SubCommand subCommand) {
-        subCommands.put(subCommand.getName(), subCommand.get());
-        subCommand.getAliases().forEach(alias -> {
-            subCommands.put(alias, subCommand.get());
-        });
-    }
-
-    /**
-     * Adds {@link SubCommand}s to this {@link ComplexCommandExecutor}.
-     * <p>
-     * If there was a {@link SubCommand} with the same name or if two or more of the given {@link SubCommand}s had the same name,<br>
-     * only the last one is stored.
-     * </p>
-     *
-     * @param subCommands the {@link SubCommand}s to add.
-     */
-    public void addSubCommands(SubCommand... subCommands) {
-        for (SubCommand sub : subCommands) {
-            addSubCommand(sub);
-        }
+    public ComplexCommandExecutor(Permission permission, CommandExecutor executor, SubElement<CommandExecutor>... subElements) {
+        super(permission, executor, subElements);
     }
 
     /**
@@ -168,15 +98,20 @@ public class ComplexCommandExecutor implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(permission == null || commandSender.hasPermission(permission)) {
-            if (strings.length == 0 || !subCommands.containsKey(strings[0])) {
-                return executor.onCommand(commandSender, command, s, strings);
+        if(getPermission() == null || commandSender.hasPermission(getPermission())) {
+            if (strings.length == 0 || !getSubElements().containsKey(strings[0])) {
+                return get().onCommand(commandSender, command, s, strings);
             } else {
-                return subCommands.get(strings[0]).onCommand(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
+                return getSubElements().get(strings[0]).onCommand(commandSender, command, s, Arrays.copyOfRange(strings, 1, strings.length));
             }
         } else{
             commandSender.sendMessage(ChatColor.RED + "Sorry, you don't have permission to use that command");
             return true;
         }
+    }
+
+    @Override
+    public CommandExecutor transformNull(CommandExecutor element) {
+        return element == null ? DEFAULT_EXECUTOR : element;
     }
 }

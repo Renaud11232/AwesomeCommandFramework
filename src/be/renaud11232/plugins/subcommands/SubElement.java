@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class SubElement<T> {
+public abstract class SubElement<T> implements NullTransformer<T>{
 
     private String name;
     private String permission;
@@ -81,10 +81,8 @@ public abstract class SubElement<T> {
     }
 
     public void set(T element){
-        this.element = transformElement(element);
+        this.element = transformNull(element);
     }
-
-    protected abstract T transformElement(T element);
 
     public List<String> getAliases() {
         return new ArrayList<>(aliases);

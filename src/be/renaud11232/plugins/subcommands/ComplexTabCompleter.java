@@ -78,7 +78,6 @@ public class ComplexTabCompleter extends ComplexElement<TabCompleter> implements
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        //if (strings.length > 0) {
         if(getPermission() == null || commandSender.hasPermission(getPermission())) {
             List<String> completion = new LinkedList<>();
             if (getSubElements().containsKey(strings[0])) {
@@ -94,16 +93,13 @@ public class ComplexTabCompleter extends ComplexElement<TabCompleter> implements
                     return completion;
                 }
             }
-        }else{
+        } else {
             return NO_TAB_COMPLETER.onTabComplete(commandSender, command, s, strings);
         }
-        /*} else {
-            return null;
-        }*/
     }
 
     @Override
-    protected TabCompleter transformElement(TabCompleter element) {
+    public TabCompleter transformNull(TabCompleter element) {
         return element == null ? DEFAULT_COMPLETER : element;
     }
 }

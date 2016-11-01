@@ -43,7 +43,7 @@ public class SubTab extends SubElement<TabCompleter> {
     }
 
     @Override
-    protected TabCompleter transformElement(TabCompleter element) {
+    public TabCompleter transformNull(TabCompleter element) {
         return (commandSender, command, alias, args) -> {
             if(getPermission() == null || commandSender.hasPermission(getPermission())){
                 if(element == null){
