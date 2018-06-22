@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="SubCommands Framework:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/SubCommands_Framework_jar</output-path>
-    <root id="archive" name="SubCommandsFramework.jar">
-      <element id="module-output" name="SubCommands Framework" />
-    </root>
-  </artifact>
-</component>
