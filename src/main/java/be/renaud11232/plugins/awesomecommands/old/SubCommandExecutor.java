@@ -8,38 +8,38 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.renaud11232.plugins.subcommands;
+package be.renaud11232.plugins.awesomecommands.old;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.permissions.Permission;
 
 /**
- * Defines a {@link ComplexCommandExecutor}'s {@link SubCommand}.
+ * Defines a {@link ComplexCommandExecutor}'s {@link SubCommandExecutor}.
  */
-public class SubCommand extends SubElement<CommandExecutor> {
+public class SubCommandExecutor extends SubElement<CommandExecutor> {
 
-    public SubCommand(String name, String... aliases) {
+    public SubCommandExecutor(String name, String... aliases) {
         super(name, aliases);
     }
 
-    public SubCommand(String name, String permission, String... aliases) {
+    public SubCommandExecutor(String name, String permission, String... aliases) {
         super(name, permission, aliases);
     }
 
-    public SubCommand(String name, Permission permission, String... aliases) {
+    public SubCommandExecutor(String name, Permission permission, String... aliases) {
         super(name, permission, aliases);
     }
 
-    public SubCommand(String name, CommandExecutor element, String... aliases) {
+    public SubCommandExecutor(String name, CommandExecutor element, String... aliases) {
         super(name, element, aliases);
     }
 
-    public SubCommand(String name, Permission permission, CommandExecutor element, String... aliases) {
+    public SubCommandExecutor(String name, Permission permission, CommandExecutor element, String... aliases) {
         super(name, permission, element, aliases);
     }
 
-    public SubCommand(String name, String permission, CommandExecutor element, String... aliases) {
+    public SubCommandExecutor(String name, String permission, CommandExecutor element, String... aliases) {
         super(name, permission, element, aliases);
     }
 

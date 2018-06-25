@@ -17,8 +17,8 @@ Also you'd like "com2" to have 2 sub commands "foo" and "bar".
 Each of those will just send messages for the example.
 
 ```
-import be.renaud11232.plugins.subcommands.ComplexCommandExecutor;
-import be.renaud11232.plugins.subcommands.SubCommand;
+import be.renaud11232.plugins.awesomecommands.old.ComplexCommandExecutor;
+import be.renaud11232.plugins.awesomecommands.old.SubCommandExecutor;
 ...
 getCommand("mycommand").setExecutor(new ComplexCommandExecutor(ComplexCommandExecutor.DEFAULT_EXECUTOR,
         new SubCommand("com1", (commandSender, command, s, strings) -> {
@@ -50,8 +50,8 @@ Which means that in this case using `/mycommand` will display a message showing 
 Let's say that now you want to add completion for the previous command.
 This will be very similar to the previous example.
 ```
-import be.renaud11232.plugins.subcommands.ComplexTabCompleter;
-import be.renaud11232.plugins.subcommands.SubTab;
+import be.renaud11232.plugins.awesomecommands.old.ComplexTabCompleter;
+import be.renaud11232.plugins.awesomecommands.old.SubTab;
 ...
 getCommand("mycommand").setTabCompleter(new ComplexTabCompleter(ComplexTabCompleter.DEFAULT_COMPLETER,
         new SubTab("com1", ComplexTabCompleter.DEFAULT_COMPLETER),

@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.renaud11232.plugins.subcommands;
+package be.renaud11232.plugins.awesomecommands.old;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -19,18 +19,18 @@ import org.bukkit.permissions.Permission;
 import java.util.Arrays;
 
 /**
- * Defines a {@link CommandExecutor} which can execute a command and some {@link SubCommand}s.
+ * Defines a {@link CommandExecutor} which can execute a command and some {@link SubCommandExecutor}s.
  * <p>
  * A {@link ComplexCommandExecutor} works as follows :
  * </p>
  * <ol>
  * <li>
- * If there's no argument or the first argument does not match a {@link SubCommand} name :<br>
+ * If there's no argument or the first argument does not match a {@link SubCommandExecutor} name :<br>
  * The {@link CommandExecutor} of this {@link ComplexCommandExecutor} is executed.
  * </li>
  * <li>
- * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br>
- * The {@link CommandExecutor} of the matching {@link SubCommand} is executed.
+ * Otherwise (If there is an argument and it matches a {@link SubCommandExecutor} name) :<br>
+ * The {@link CommandExecutor} of the matching {@link SubCommandExecutor} is executed.
  * </li>
  * </ol>
  */
@@ -77,17 +77,17 @@ public class ComplexCommandExecutor extends ComplexElement<CommandExecutor> impl
      * Executes this {@link ComplexCommandExecutor}.
      * <ol>
      * <li>
-     * If there's no argument or the first argument does not match a {@link SubCommand} name :<br>
+     * If there's no argument or the first argument does not match a {@link SubCommandExecutor} name :<br>
      * The {@link CommandExecutor} of this {@link ComplexCommandExecutor} is executed.
      * </li>
      * <li>
-     * Otherwise (If there is an argument and it matches a {@link SubCommand} name) :<br>
-     * The {@link CommandExecutor} of the matching {@link SubCommand} is executed.
+     * Otherwise (If there is an argument and it matches a {@link SubCommandExecutor} name) :<br>
+     * The {@link CommandExecutor} of the matching {@link SubCommandExecutor} is executed.
      * </li>
      * </ol>
      * <p>
-     * This means if you have a {@link SubCommand} with a given name, the {@link CommandExecutor} of this {@link ComplexCommandExecutor} will never get that given name as an argument.<br>
-     * It will always call the {@link SubCommand} executor instead.
+     * This means if you have a {@link SubCommandExecutor} with a given name, the {@link CommandExecutor} of this {@link ComplexCommandExecutor} will never get that given name as an argument.<br>
+     * It will always call the {@link SubCommandExecutor} executor instead.
      * </p>
      *
      * @param commandSender the {@link CommandSender}.
