@@ -1,6 +1,6 @@
 main: be.renaud11232.plugins.awesomecommands.AwesomePlugin
 name: AwesomePlugin
-version: 1.0
+version: ${version}
 commands:
     foo:
         description: Foo desc

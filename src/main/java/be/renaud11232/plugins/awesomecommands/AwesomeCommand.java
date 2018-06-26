@@ -75,8 +75,27 @@ public class AwesomeCommand extends Command {
 
     @Override
     public List<String> tabComplete(CommandSender commandSender, String s, String[] strings) {
-        if(testPermissionSilent(commandSender)) {
-            return null;
+        if(strings.length > 0 && testPermissionSilent(commandSender)) {
+            if(subCommands.containsKey(strings[0])) {
+                return subCommands.get(strings[0]).tabComplete(commandSender, s + " " + strings[0], Arrays.copyOfRange(strings, 1, strings.length));
+            } else {
+                var completionSet = new HashSet<String>();
+                if(strings.length == 1) {
+                    subCommands.keySet()
+                            .stream()
+                            .filter(subcommand -> subcommand.startsWith(strings[0]))
+                            .forEach(completionSet::add);
+                }
+                var otherCompletions = tabCompleter.onTabComplete(commandSender, this, s, strings);
+                if(otherCompletions == null){
+                    completionSet.addAll(super.tabComplete(commandSender, s, strings));
+                } else {
+                    completionSet.addAll(otherCompletions);
+                }
+                var completionList = new LinkedList<>(completionSet);
+                completionList.sort(String.CASE_INSENSITIVE_ORDER);
+                return completionList;
+            }
         } else {
             return NO_COMPLETER.onTabComplete(commandSender, this, s, strings);
         }
