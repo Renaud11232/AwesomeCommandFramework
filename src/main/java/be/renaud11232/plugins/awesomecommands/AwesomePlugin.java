@@ -9,17 +9,12 @@ import java.util.*;
 
 public class AwesomePlugin extends JavaPlugin {
 
-    private Map<String, AwesomeCommand> awesomeCommands;
+    private AwesomeCommandMap commandMap;
 
     public AwesomePlugin() {
-        awesomeCommands = new HashMap<>();
+        commandMap = new AwesomeCommandMap();
         getDescription().getCommands().forEach((key, value) -> {
-            var awesomeCommand = parseCommand(key, value);
-            awesomeCommands.put(key, awesomeCommand);
-            awesomeCommand.getAliases()
-                    .stream()
-                    .filter(alias -> !awesomeCommands.containsKey(alias))
-                    .forEach(alias -> awesomeCommands.put(alias, awesomeCommand));
+            commandMap.putCommand(parseCommand(key, value));
         });
     }
 
@@ -64,7 +59,6 @@ public class AwesomePlugin extends JavaPlugin {
     }
 
     public AwesomeCommand getAwesomeCommand(String name){
-        var nameSplit = name.split("\\.", 2);
-        return nameSplit.length == 1 ? awesomeCommands.get(nameSplit[0]) : awesomeCommands.get(nameSplit[0]).getSubCommand(nameSplit[1]);
+        return commandMap.getCommand(name);
     }
 }
