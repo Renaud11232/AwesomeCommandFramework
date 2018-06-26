@@ -44,7 +44,7 @@ public class AwesomeCommand extends Command {
     }
 
     public AwesomeCommand getSubCommand(String name) {
-        var nameSplit = name.split(".", 2);
+        var nameSplit = name.split("\\.", 2);
         return nameSplit.length == 1 ? subCommands.get(nameSplit[0]) : subCommands.get(nameSplit[0]).getSubCommand(nameSplit[1]);
     }
 
