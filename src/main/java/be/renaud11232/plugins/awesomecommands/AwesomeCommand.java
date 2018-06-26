@@ -51,15 +51,21 @@ public class AwesomeCommand extends Command {
         subCommands.putCommand(awesomeCommand);
     }
 
+    public void removeSubCommand(AwesomeCommand awesomeCommand) {
+        subCommands.removeCommand(awesomeCommand);
+    }
+
+    public void clearSubCommands() {
+        subCommands.clearCommands();
+    }
+
     @Override
     public boolean execute(CommandSender commandSender, String s, String[] strings) {
-        if(testPermission(commandSender)) {
-            if(strings.length == 0 || !subCommands.hasCommand(strings[0])) {
-                if(!executor.onCommand(commandSender, this, s, strings)){
-                    if(getUsage().length() > 0) {
-                        Arrays.asList(getUsage().replace("<command>", s).split("(\r\n|\n)"))
-                                .forEach(commandSender::sendMessage);
-                    }
+        if (testPermission(commandSender)) {
+            if (strings.length == 0 || !subCommands.hasCommand(strings[0])) {
+                if (!executor.onCommand(commandSender, this, s, strings) && getUsage().length() > 0) {
+                    Arrays.asList(getUsage().replace("<command>", s).split("(\r\n|\n)"))
+                            .forEach(commandSender::sendMessage);
                 }
             } else {
                 subCommands.getCommand(strings[0]).execute(commandSender, s + " " + strings[0], Arrays.copyOfRange(strings, 1, strings.length));
@@ -70,19 +76,19 @@ public class AwesomeCommand extends Command {
 
     @Override
     public List<String> tabComplete(CommandSender commandSender, String s, String[] strings) {
-        if(strings.length > 0 && testPermissionSilent(commandSender)) {
-            if(subCommands.hasCommand(strings[0])) {
+        if (strings.length > 0 && testPermissionSilent(commandSender)) {
+            if (subCommands.hasCommand(strings[0])) {
                 return subCommands.getCommand(strings[0]).tabComplete(commandSender, s + " " + strings[0], Arrays.copyOfRange(strings, 1, strings.length));
             } else {
                 var completionSet = new HashSet<String>();
-                if(strings.length == 1) {
+                if (strings.length == 1) {
                     subCommands.getKnownCommandNames()
                             .stream()
                             .filter(subcommand -> subcommand.startsWith(strings[0]))
                             .forEach(completionSet::add);
                 }
                 var otherCompletions = tabCompleter.onTabComplete(commandSender, this, s, strings);
-                if(otherCompletions == null){
+                if (otherCompletions == null) {
                     completionSet.addAll(super.tabComplete(commandSender, s, strings));
                 } else {
                     completionSet.addAll(otherCompletions);

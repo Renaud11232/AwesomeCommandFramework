@@ -13,30 +13,28 @@ public class AwesomePlugin extends JavaPlugin {
 
     public AwesomePlugin() {
         commandMap = new AwesomeCommandMap();
-        getDescription().getCommands().forEach((key, value) -> {
-            commandMap.putCommand(parseCommand(key, value));
-        });
+        getDescription().getCommands().forEach((key, value) -> commandMap.putCommand(parseCommand(key, value)));
     }
 
     private AwesomeCommand parseCommand(String name, Map<String, Object> properties) {
         var awesomeCommand = new AwesomeCommand(name);
-        if(properties.containsKey("description")) {
+        if (properties.containsKey("description")) {
             awesomeCommand.setDescription((String) properties.get("description"));
         }
-        if(properties.containsKey("aliases")) {
+        if (properties.containsKey("aliases")) {
             var aliases = properties.get("aliases");
             awesomeCommand.setAliases(aliases instanceof String ? Collections.singletonList((String) aliases) : (List) aliases);
         }
-        if(properties.containsKey("permission")) {
+        if (properties.containsKey("permission")) {
             awesomeCommand.setPermission((String) properties.get("permission"));
         }
-        if(properties.containsKey("permission-message")) {
+        if (properties.containsKey("permission-message")) {
             awesomeCommand.setPermissionMessage((String) properties.get("permission-message"));
         }
-        if(properties.containsKey("usage")) {
+        if (properties.containsKey("usage")) {
             awesomeCommand.setUsage((String) properties.get("usage"));
         }
-        if(properties.containsKey("subcommands")) {
+        if (properties.containsKey("subcommands")) {
             ((Map<String, Map<String, Object>>) properties.get("subcommands")).forEach((key, value) -> awesomeCommand.addSubCommand(parseCommand(key, value)));
         }
         return awesomeCommand;
@@ -58,7 +56,7 @@ public class AwesomePlugin extends JavaPlugin {
         throw new UnsupportedOperationException("This method has been replaced by the much more awesome 'getAwesomeCommand(String)' method");
     }
 
-    public AwesomeCommand getAwesomeCommand(String name){
+    public AwesomeCommand getAwesomeCommand(String name) {
         return commandMap.getCommand(name);
     }
 }

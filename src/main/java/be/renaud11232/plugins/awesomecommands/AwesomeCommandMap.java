@@ -20,6 +20,15 @@ public class AwesomeCommandMap {
                 .forEach(alias -> commands.put(alias, command));
     }
 
+    public void removeCommand(AwesomeCommand awesomeCommand) {
+        commands.remove(awesomeCommand.getName(), awesomeCommand);
+        awesomeCommand.getAliases().forEach(alias -> commands.remove(alias, awesomeCommand));
+    }
+
+    public void clearCommands() {
+        commands.clear();
+    }
+
     public AwesomeCommand getCommand(String name) {
         var nameSplit = name.split("\\.", 2);
         return nameSplit.length == 1 ? commands.get(nameSplit[0]) : commands.get(nameSplit[0]).getSubCommand(nameSplit[1]);
