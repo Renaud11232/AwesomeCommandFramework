@@ -3,9 +3,9 @@
 AwesomeCommand Framework is a Bukkit/Spigot framework that can be used to build any Bukkit plugin needing to use commands and sub commands.
 
 ### *AwesomeCommand Framework Goals*
-  * Provide a clear and easy way to define plugin commands and sub commands
-  * Provide a simple way to manage command (and sub command) autocompletion
-  * Make commands and sub commands easy to maintain, or add
+  * Provide a clear and easy way to define plugin commands and sub commands.
+  * Provide a simple way to manage command (and sub command) autocompletion.
+  * Make commands and sub commands easy to maintain, or add.
   * Making the implementation of these sub commands as close as the regular commands.
 
 ### *How to use*
@@ -21,7 +21,7 @@ To define sub commands simply add a `subcommands` object. A sub command can also
 Sample file:
 
 ```yaml
-main: com.example.plugin.Main
+main: com.example.plugin.MyAwesomePlugin
 name: AwesomePlugin
 version: 1.0
 commands:
@@ -51,7 +51,7 @@ Each sub command have the same attributes than a regular command.
 Once you have defined your commands in the `plugin.yml` file, you can attach to each of these commands `CommandExecutor`'s and `TabCompleter`'s using
 the `getAwesomeCommand(String name)`method which works like the usual `getCommand(String name)`.
 
-For instance
+For instance :
 ```java
 public class MyAwesomePlugin extends AwesomePlugin {
     @Override
@@ -75,13 +75,15 @@ Notice the `getAwesomeCommand("foo.foobar")`. When referencing sub commands you 
 
 The exact same thing can be done to add a `TabCompleter` to a command or sub command, just use `setTabCompleter(TabCompleter completer)` instead of `setExecutor(CommandExecutor executor)`.
 
+Be aware that the old `getCommand(String name)` is now deprecated and will always throw an `UnsupportedOperationException`.
+
 ##### Constants
 
 There are 4 basic executors and completers that might be useful :
-  * `AwesomeCommand.DEFAULT_EXECUTOR` : `CommandExecutor`that has the same behavior as the default one, which always returns false
-  * `AwesomeCommand.NO_EXECUTOR`: `CommandExecutor`which always returns true
-  * `AwesomeCommand.DEFAULT_COMPLETER`: `TabCompleter`that has the same behavior as the default one, which always returns null
-  * `AwesomeCommand.NO_COMPLETER`: `TabCompleter` which always returns an empty list
+  * `AwesomeCommand.DEFAULT_EXECUTOR` : `CommandExecutor`that has the same behavior as the default one, which always returns false.
+  * `AwesomeCommand.NO_EXECUTOR` : `CommandExecutor`which always returns true.
+  * `AwesomeCommand.DEFAULT_COMPLETER` : `TabCompleter`that has the same behavior as the default one, which always returns null.
+  * `AwesomeCommand.NO_COMPLETER` : `TabCompleter` which always returns an empty list.
 
 
 ### *License*
