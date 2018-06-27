@@ -15,7 +15,7 @@ This framework gives a way to create sub commands the same way regular commands 
 ##### plugin.yml
 
 
-First, you'll need to define your sub commands in your `plugin.yml`file.
+First, you'll need to define your sub commands in your `plugin.yml` file.
 To define sub commands simply add a `subcommands` object. A sub command can also have sub commands.
 
 Sample file:
