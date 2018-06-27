@@ -1,4 +1,4 @@
-package be.renaud11232.plugins.awesomecommands;
+package be.renaud11232.plugins.awesomecommand;
 
 import java.util.Collection;
 import java.util.HashMap;
