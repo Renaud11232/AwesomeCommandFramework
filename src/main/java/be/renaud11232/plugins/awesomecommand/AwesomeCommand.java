@@ -8,7 +8,7 @@ import org.bukkit.command.TabCompleter;
 import java.util.*;
 
 /**
- * Defines a {@link Command} just like the regular ones butt quite better
+ * Defines a {@link Command} just like the regular ones but quite better
  */
 public class AwesomeCommand extends Command {
 
