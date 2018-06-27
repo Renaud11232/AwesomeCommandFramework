@@ -154,4 +154,5 @@ public class AwesomeCommand extends Command {
             return NO_COMPLETER.onTabComplete(commandSender, this, s, strings);
         }
     }
+
 }

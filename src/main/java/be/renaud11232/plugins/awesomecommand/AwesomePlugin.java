@@ -45,6 +45,7 @@ public class AwesomePlugin extends JavaPlugin {
         }
         return awesomeCommand;
     }
+
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         return getAwesomeCommand(command.getName()).execute(sender, label, args);
@@ -76,4 +77,5 @@ public class AwesomePlugin extends JavaPlugin {
     public AwesomeCommand getAwesomeCommand(String name) {
         return commandMap.getCommand(name);
     }
+
 }
