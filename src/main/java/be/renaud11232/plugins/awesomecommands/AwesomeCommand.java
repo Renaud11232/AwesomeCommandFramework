@@ -7,18 +7,37 @@ import org.bukkit.command.TabCompleter;
 
 import java.util.*;
 
+/**
+ * Defines a {@link Command} just like the regular ones butt quite better
+ */
 public class AwesomeCommand extends Command {
 
+    /**
+     * Default {@link CommandExecutor} that always returns false.
+     */
     public static final CommandExecutor DEFAULT_EXECUTOR = (commandSender, command, s, strings) -> false;
+    /**
+     * {@link CommandExecutor} that always returns true.
+     */
     public static final CommandExecutor NO_EXECUTOR = (commandSender, command, s, strings) -> true;
 
+    /**
+     * Default {@link TabCompleter} that always returns null.
+     */
     public static final TabCompleter DEFAULT_COMPLETER = (commandSender, command, s, strings) -> null;
+    /**
+     * {@link TabCompleter} that always returns an empty {@link List}.
+     */
     public static final TabCompleter NO_COMPLETER = (commandSender, command, s, strings) -> Collections.emptyList();
 
     private AwesomeCommandMap subCommands;
     private CommandExecutor executor;
     private TabCompleter tabCompleter;
 
+    /**
+     * Constructs a new {@link AwesomeCommand}
+     * @param name the name of the command to create
+     */
     public AwesomeCommand(String name) {
         super(name);
         subCommands = new AwesomeCommandMap();
@@ -27,34 +46,68 @@ public class AwesomeCommand extends Command {
         usageMessage = "/<command>";
     }
 
+    /**
+     *
+     * Gets the {@link CommandExecutor} for this {@link AwesomeCommand}
+     * @return the {@link CommandExecutor}
+     */
     public CommandExecutor getExecutor() {
         return executor;
     }
 
+    /**
+     * Sets the {@link CommandExecutor} for this {@link AwesomeCommand}
+     * @param executor the {@link CommandExecutor} to set
+     */
     public void setExecutor(CommandExecutor executor) {
         this.executor = executor;
     }
 
+    /**
+     * Gets the {@link TabCompleter} for this {@link AwesomeCommand}
+     * @return the {@link TabCompleter}
+     */
     public TabCompleter getTabCompleter() {
         return tabCompleter;
     }
 
+    /**
+     * Sets the {@link TabCompleter} for this {@link AwesomeCommand}
+     * @param tabCompleter the {@link TabCompleter} to set
+     */
     public void setTabCompleter(TabCompleter tabCompleter) {
         this.tabCompleter = tabCompleter;
     }
 
+    /**
+     * Gets the sub command with the given name.
+     * The given name can be in the format parent.subcommand for recursive search.
+     * @param name the name of the subcommand
+     * @return the {@link AwesomeCommand}
+     */
     public AwesomeCommand getSubCommand(String name) {
         return subCommands.getCommand(name);
     }
 
+    /**
+     * Adds a given {@link AwesomeCommand} as a sob command of this {@link AwesomeCommand}
+     * @param awesomeCommand the {@link AwesomeCommand} to add as a sub command
+     */
     public void addSubCommand(AwesomeCommand awesomeCommand) {
         subCommands.putCommand(awesomeCommand);
     }
 
+    /**
+     * Removes an {@link AwesomeCommand} from the sub commands
+     * @param awesomeCommand the {@link AwesomeCommand} to remove
+     */
     public void removeSubCommand(AwesomeCommand awesomeCommand) {
         subCommands.removeCommand(awesomeCommand);
     }
 
+    /**
+     * Removes all this {@link AwesomeCommand}'s sub commands
+     */
     public void clearSubCommands() {
         subCommands.clearCommands();
     }

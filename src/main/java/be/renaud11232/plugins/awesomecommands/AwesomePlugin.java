@@ -7,10 +7,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+/**
+ * Defines an Bukkit/Spigot plugin but better and more awesome
+ */
 public class AwesomePlugin extends JavaPlugin {
 
     private AwesomeCommandMap commandMap;
 
+    /**
+     * Constructs a new {@link AwesomePlugin}
+     */
     public AwesomePlugin() {
         commandMap = new AwesomeCommandMap();
         getDescription().getCommands().forEach((key, value) -> commandMap.putCommand(parseCommand(key, value)));
@@ -39,7 +45,6 @@ public class AwesomePlugin extends JavaPlugin {
         }
         return awesomeCommand;
     }
-
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         return getAwesomeCommand(command.getName()).execute(sender, label, args);
@@ -50,12 +55,24 @@ public class AwesomePlugin extends JavaPlugin {
         return getAwesomeCommand(command.getName()).tabComplete(sender, alias, args);
     }
 
+    /**
+     * Deprecated, replaced by getAwesomeCommand
+     * @param name not used
+     * @return nothing, always throws an {@link UnsupportedOperationException}
+     * @throws UnsupportedOperationException all the time
+     */
     @Override
     @Deprecated
-    public PluginCommand getCommand(String name) {
+    public PluginCommand getCommand(String name) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("This method has been replaced by the much more awesome 'getAwesomeCommand(String)' method");
     }
 
+    /**
+     * Gets the {@link AwesomeCommand} with the given name.
+     * To access sub commands, use dot separated notation between parent and sub commands
+     * @param name fully qualified name of the command
+     * @return the command with the given name, null if it does not exist.
+     */
     public AwesomeCommand getAwesomeCommand(String name) {
         return commandMap.getCommand(name);
     }
