@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.renaud11232</groupId>
-    <artifactId>plugin-awesome-commands</artifactId>
+    <artifactId>plugin-awesome-command</artifactId>
     <version>2.0</version>
 
     <build>
