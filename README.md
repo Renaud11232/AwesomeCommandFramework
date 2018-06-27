@@ -48,7 +48,7 @@ Each sub command have the same attributes than a regular command.
 
 ##### CommandExecutor and TabCompleter
 
-Once you have defined your commands in the `plugin.yml`file, you can attach to each of these commands `CommandExecutor`'s and `TabCompleter`'s using
+Once you have defined your commands in the `plugin.yml` file, you can attach to each of these commands `CommandExecutor`'s and `TabCompleter`'s using
 the `getAwesomeCommand(String name)`method which works like the usual `getCommand(String name)`.
 
 For instance
