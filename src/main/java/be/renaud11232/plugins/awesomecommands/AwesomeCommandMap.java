@@ -49,8 +49,8 @@ public class AwesomeCommandMap {
     /**
      * Gets an {@link AwesomeCommand} in this map based on its fully qualified name.
      * This can be a sub command using dotted notation
-     * @param name
-     * @return
+     * @param name the name of the command or sub command to get
+     * @return the {@link AwesomeCommand} if it exists of null otherwise
      */
     public AwesomeCommand getCommand(String name) {
         var nameSplit = name.split("\\.", 2);
