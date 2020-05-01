@@ -38,4 +38,12 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Renaud11232 Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/renaud11232/AwesomeCommandFramework</url>
+        </repository>
+    </distributionManagement>
+
 </project>
