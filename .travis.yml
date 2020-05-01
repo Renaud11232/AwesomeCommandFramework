@@ -1,10 +1,6 @@
 dist: bionic
 language: java
 
-cache:
-  directories:
-    - "$HOME/.cache"
-
 jobs:
   include:
     - stage: compile
@@ -15,6 +11,6 @@ jobs:
       deploy:
         provider: script
         script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy
-        skip_cleanup: true
+        cleaup: false
         on:
-          branch: master
+          tags: true
