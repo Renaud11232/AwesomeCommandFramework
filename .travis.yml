@@ -7,4 +7,4 @@ deploy:
   script: "cp .travis.settings.yml $HOME/.m2/settings.xml && mvn deploy"
   skip_cleanup: true
   on:
-    tags: true
+    branch: master
