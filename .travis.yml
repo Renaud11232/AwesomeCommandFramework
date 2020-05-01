@@ -4,7 +4,7 @@ cache:
     - "$HOME/.cache"
 deploy:
   provider: script
-  script: "cp .travis.settings.yml $HOME/.m2/settings.xml && mvn deploy"
+  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
   skip_cleanup: true
   on:
     branch: master
