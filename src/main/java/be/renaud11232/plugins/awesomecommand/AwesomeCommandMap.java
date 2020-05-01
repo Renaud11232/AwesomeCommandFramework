@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class AwesomeCommandMap {
 
-    private Map<String, AwesomeCommand> commands;
+    private final Map<String, AwesomeCommand> commands;
 
     /**
      * Constructs a new empty {@link AwesomeCommandMap}
@@ -53,7 +53,7 @@ public class AwesomeCommandMap {
      * @return the {@link AwesomeCommand} if it exists of null otherwise
      */
     public AwesomeCommand getCommand(String name) {
-        var nameSplit = name.split("\\.", 2);
+        String[] nameSplit = name.split("\\.", 2);
         return nameSplit.length == 1 ? commands.get(nameSplit[0]) : commands.get(nameSplit[0]).getSubCommand(nameSplit[1]);
     }
 

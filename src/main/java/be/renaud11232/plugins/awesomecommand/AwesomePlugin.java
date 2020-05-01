@@ -23,12 +23,12 @@ public class AwesomePlugin extends JavaPlugin {
     }
 
     private AwesomeCommand parseCommand(String name, Map<String, Object> properties) {
-        var awesomeCommand = new AwesomeCommand(name);
+        AwesomeCommand awesomeCommand = new AwesomeCommand(name);
         if (properties.containsKey("description")) {
             awesomeCommand.setDescription((String) properties.get("description"));
         }
         if (properties.containsKey("aliases")) {
-            var aliases = properties.get("aliases");
+            Object aliases = properties.get("aliases");
             awesomeCommand.setAliases(aliases instanceof String ? Collections.singletonList((String) aliases) : (List) aliases);
         }
         if (properties.containsKey("permission")) {
