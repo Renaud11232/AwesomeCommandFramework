@@ -11,6 +11,6 @@ jobs:
       deploy:
         provider: script
         script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy
-        cleaup: false
+        cleanup: false
         on:
           tags: true
