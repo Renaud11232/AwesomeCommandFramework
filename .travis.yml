@@ -19,8 +19,9 @@ jobs:
         script: >-
           mvn javadoc:javadoc &&
           mv target/site/apidocs $HOME &&
-          git fetch &&
-          git checkout gh-pages &&
+          cd $HOME &&
+          git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/Renaud11232/AwesomeCommandFramework.git gh-pages > /dev/null 2>&1 &&
+          cd gh-pages &&
           git config user.email "travis@travis-ci.org" &&
           git config user.name "Travis CI" &&
           rm -rf * .* &&
@@ -28,7 +29,7 @@ jobs:
           git add . &&
           git commit --message "Travis build : $TRAVIS_BUILD_NUMBER" &&
           git remote add origin-pages https://${GH_TOKEN}@github.com/Renaud11232/AwesomeCommandFramework.git > /dev/null 2>&1 &&
-          git push --quiet --set-upstream origin-pages gh-pages
+          git push -fq origin gh-pages > /dev/null 2>&1 &&
         cleanup: false
         skip_cleanup: true
         on:
