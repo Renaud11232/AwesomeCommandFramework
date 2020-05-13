@@ -18,17 +18,17 @@ jobs:
     - stage: deploy
       deploy:
         provider: script
-        script: |
-          mvn javadoc:javadoc
-          mv target/site/apidocs $HOME
-          git checkout gh-pages
-          git config user.email "travis@travis-ci.org"
-          git config user.name "Travis CI"
-          rm * .*
-          mv $HOME/apidocs/* .
-          git add .
-          git commit --message "Travis build : $TRAVIS_BUILD_NUMBER"
-          git remote add origin-pages https://${GH_TOKEN}@github.com/Renaud11232/AwesomeCommandFramework.git > /dev/null 2>&1
+        script: >-
+          mvn javadoc:javadoc &&
+          mv target/site/apidocs $HOME &&
+          git checkout gh-pages &&
+          git config user.email "travis@travis-ci.org" &&
+          git config user.name "Travis CI" &&
+          rm * .* &&
+          mv $HOME/apidocs/* . &&
+          git add . &&
+          git commit --message "Travis build : $TRAVIS_BUILD_NUMBER" &&
+          git remote add origin-pages https://${GH_TOKEN}@github.com/Renaud11232/AwesomeCommandFramework.git > /dev/null 2>&1 &&
           git push --quiet --set-upstream origin-pages gh-pages
         cleanup: false
         skip_cleanup: true
