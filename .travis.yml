@@ -19,10 +19,11 @@ jobs:
         script: >-
           mvn javadoc:javadoc &&
           mv target/site/apidocs $HOME &&
-          git checkout -b gh-pages &&
+          git fetch &&
+          git checkout gh-pages &&
           git config user.email "travis@travis-ci.org" &&
           git config user.name "Travis CI" &&
-          rm * .* &&
+          rm -rf * .* &&
           mv $HOME/apidocs/* . &&
           git add . &&
           git commit --message "Travis build : $TRAVIS_BUILD_NUMBER" &&
