@@ -28,7 +28,6 @@ jobs:
           mv $HOME/apidocs/* . &&
           git add . &&
           git commit --message "Travis build : $TRAVIS_BUILD_NUMBER" &&
-          git remote add origin-pages https://${GH_TOKEN}@github.com/Renaud11232/AwesomeCommandFramework.git > /dev/null 2>&1 &&
           git push -fq origin gh-pages > /dev/null 2>&1 &&
         cleanup: false
         skip_cleanup: true
