@@ -24,7 +24,7 @@ jobs:
           cd gh-pages &&
           git config user.email "travis@travis-ci.org" &&
           git config user.name "Travis CI" &&
-          rm -rf * .* &&
+          rm -rf * &&
           mv $HOME/apidocs/* . &&
           git add . &&
           git commit --message "Travis build : $TRAVIS_BUILD_NUMBER" &&
