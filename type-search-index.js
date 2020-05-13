@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"be.renaud11232.plugins.awesomecommand","l":"AwesomeCommand"},{"p":"be.renaud11232.plugins.awesomecommand","l":"AwesomeCommandMap"},{"p":"be.renaud11232.plugins.awesomecommand","l":"AwesomePlugin"}]
