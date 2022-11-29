@@ -1,10 +1,9 @@
 package be.renaud11232.awesomecommand;
 
 import be.renaud11232.awesomecommand.annotation.*;
+import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class ComplexCommand extends Command {
@@ -52,7 +51,7 @@ public class ComplexCommand extends Command {
     public boolean execute(CommandSender sender, String alias, String[] args) {
         if (testPermission(sender)) {
             if (args.length == 0 || !subCommands.containsKey(args[0])) {
-                AwesomeCommandExecutor commandExecutor = getCommandExecutorInstance(sender, alias, args);
+                AwesomeCommandExecutor commandExecutor = new CommandParser(commandClass, this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
                 if ((commandExecutor == null || !commandExecutor.execute()) && !awesomeCommand.usage().isEmpty()) {
                     Arrays.stream(awesomeCommand.usage().replace("<command>", alias).split("\r?\n"))
                             .forEach(sender::sendMessage);
@@ -77,7 +76,7 @@ public class ComplexCommand extends Command {
                             .filter(subCommand -> subCommand.startsWith(args[0]))
                             .forEach(completionSet::add);
                 }
-                AwesomeTabCompleter tabCompleter = getTabCompleterInstance(sender, alias, args);
+                AwesomeTabCompleter tabCompleter = new CommandParser(commandClass, this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
                 if (tabCompleter != null) {
                     List<String> otherCompletions = tabCompleter.tabComplete();
                     if (otherCompletions == null) {
@@ -94,56 +93,6 @@ public class ComplexCommand extends Command {
             }
         } else {
             return Collections.emptyList();
-        }
-    }
-
-    private AwesomeCommandExecutor getCommandExecutorInstance(CommandSender sender, String alias, String[] args) {
-        if (AwesomeCommandExecutor.class.isAssignableFrom(commandClass)) {
-            try {
-                Constructor<?> constructor = commandClass.getConstructor();
-                AwesomeCommandExecutor commandExecutor = (AwesomeCommandExecutor) constructor.newInstance();
-                populateInstance(commandExecutor, sender, alias, args);
-                return commandExecutor;
-            } catch (Throwable t) {
-                throw new CommandException("Unable to create AwesomeCommandExecutor instance :", t);
-            }
-        }
-        return null;
-    }
-
-    private AwesomeTabCompleter getTabCompleterInstance(CommandSender sender, String alias, String[] args) {
-        if (AwesomeTabCompleter.class.isAssignableFrom(commandClass)) {
-            try {
-                Constructor<?> constructor = commandClass.getConstructor();
-                AwesomeTabCompleter tabCompleter = (AwesomeTabCompleter) constructor.newInstance();
-                populateInstance(tabCompleter, sender, alias, args);
-                return tabCompleter;
-            } catch (Throwable t) {
-                throw new CommandException("Unable to create AwesomeTabCompleter instance :", t);
-            }
-        }
-        return null;
-    }
-
-    private <T> void populateInstance(T instance, CommandSender sender, String alias, String[] args) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
-            try {
-                if (field.getAnnotation(CommandSenderParameter.class) != null) {
-                    field.setAccessible(true);
-                    field.set(instance, sender);
-                } else if (field.getAnnotation(AliasParameter.class) != null) {
-                    field.setAccessible(true);
-                    field.set(instance, alias);
-                } else if (field.getAnnotation(Arguments.class) != null) {
-                    field.setAccessible(true);
-                    field.set(instance, args);
-                } else if (field.getAnnotation(CommandParameter.class) != null) {
-                    field.setAccessible(true);
-                    field.set(instance, this);
-                }
-            } catch (IllegalAccessException e) {
-                throw new CommandException("Unable to populate field " + field.getName() + " for class " + instance.getClass().getName(), e);
-            }
         }
     }
 }
