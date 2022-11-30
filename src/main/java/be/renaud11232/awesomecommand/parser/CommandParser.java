@@ -2,10 +2,7 @@ package be.renaud11232.awesomecommand.parser;
 
 import be.renaud11232.awesomecommand.AwesomeCommandExecutor;
 import be.renaud11232.awesomecommand.AwesomeTabCompleter;
-import be.renaud11232.awesomecommand.annotation.AliasParameter;
-import be.renaud11232.awesomecommand.annotation.Arguments;
-import be.renaud11232.awesomecommand.annotation.CommandParameter;
-import be.renaud11232.awesomecommand.annotation.CommandSenderParameter;
+import be.renaud11232.awesomecommand.annotation.args.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -18,11 +15,15 @@ public class CommandParser {
     private String alias;
     private String[] arguments;
     private final Class<?> commandSpecification;
-    private final Command command;
+    private Command command;
 
-    public CommandParser(Class<?> commandSpec, Command command) {
+    public CommandParser(Class<?> commandSpec) {
         this.commandSpecification = commandSpec;
+    }
+
+    public CommandParser forCommand(Command command) {
         this.command = command;
+        return this;
     }
 
     public CommandParser sentFrom(CommandSender commandSender) {

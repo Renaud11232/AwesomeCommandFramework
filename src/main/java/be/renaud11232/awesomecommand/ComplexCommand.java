@@ -1,6 +1,6 @@
 package be.renaud11232.awesomecommand;
 
-import be.renaud11232.awesomecommand.annotation.*;
+import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
 import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
 
@@ -51,13 +51,13 @@ public class ComplexCommand extends Command {
     public boolean execute(CommandSender sender, String alias, String[] args) {
         if (testPermission(sender)) {
             if (args.length == 0 || !subCommands.containsKey(args[0])) {
-                AwesomeCommandExecutor commandExecutor = new CommandParser(commandClass, this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
+                AwesomeCommandExecutor commandExecutor = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
                 if ((commandExecutor == null || !commandExecutor.execute()) && !awesomeCommand.usage().isEmpty()) {
                     Arrays.stream(awesomeCommand.usage().replace("<command>", alias).split("\r?\n"))
                             .forEach(sender::sendMessage);
                 }
             } else {
-                return subCommands.get(args[0]).execute(sender, alias + " " + args[0], Arrays.copyOfRange(args, 1, args.length));
+                subCommands.get(args[0]).execute(sender, alias + " " + args[0], Arrays.copyOfRange(args, 1, args.length));
             }
         }
         return true;
@@ -76,7 +76,7 @@ public class ComplexCommand extends Command {
                             .filter(subCommand -> subCommand.startsWith(args[0]))
                             .forEach(completionSet::add);
                 }
-                AwesomeTabCompleter tabCompleter = new CommandParser(commandClass, this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
+                AwesomeTabCompleter tabCompleter = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
                 if (tabCompleter != null) {
                     List<String> otherCompletions = tabCompleter.tabComplete();
                     if (otherCompletions == null) {

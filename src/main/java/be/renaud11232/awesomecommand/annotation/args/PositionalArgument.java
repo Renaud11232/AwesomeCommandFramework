@@ -1,4 +1,4 @@
-package be.renaud11232.awesomecommand.annotation;
+package be.renaud11232.awesomecommand.annotation.args;
 
 import java.lang.annotation.*;
 
