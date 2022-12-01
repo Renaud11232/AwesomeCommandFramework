@@ -1,12 +1,12 @@
-package be.renaud11232.awesomecommand;
+package be.renaud11232.awesomecommand.annotation.util;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
 
 import java.util.Objects;
 
-public class Util {
+public class AnnotationUtil {
 
-    private Util() {
+    private AnnotationUtil() {
         throw new UnsupportedOperationException();
     }
 

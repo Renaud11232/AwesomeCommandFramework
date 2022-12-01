@@ -1,4 +1,4 @@
-package be.renaud11232.awesomecommand.annotation.processor;
+package be.renaud11232.awesomecommand.annotation.util;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;

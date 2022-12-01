@@ -1,6 +1,7 @@
 package be.renaud11232.awesomecommand;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
+import be.renaud11232.awesomecommand.annotation.util.AnnotationUtil;
 import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
 
@@ -14,7 +15,7 @@ public class ComplexCommand extends Command {
     private final Map<String, ComplexCommand> subCommands;
 
     public ComplexCommand(Class<?> commandClass) {
-        this(commandClass, Util.getCommandAnnotation(commandClass));
+        this(commandClass, AnnotationUtil.getCommandAnnotation(commandClass));
     }
 
     private ComplexCommand(Class<?> commandClass, AwesomeCommand awesomeCommand) {
