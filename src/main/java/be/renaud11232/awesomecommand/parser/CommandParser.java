@@ -9,6 +9,10 @@ import org.bukkit.command.CommandSender;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+/**
+ * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
+ * which can then be executed
+ */
 public class CommandParser {
 
     private CommandSender commandSender;
@@ -17,30 +21,64 @@ public class CommandParser {
     private final Class<?> commandSpecification;
     private Command command;
 
+    /**
+     * Constructs a new {@link CommandParser} for a given command specification
+     *
+     * @param commandSpec the command specification class that will be instantiated and populated.
+     */
     public CommandParser(Class<?> commandSpec) {
         this.commandSpecification = commandSpec;
     }
 
+    /**
+     * Sets the reference to the {@link Command}
+     *
+     * @param command the linked {@link Command}
+     * @return this {@link CommandParser} for method chaining
+     */
     public CommandParser forCommand(Command command) {
         this.command = command;
         return this;
     }
 
+    /**
+     * Sets the reference to the {@link CommandSender}
+     *
+     * @param commandSender the linked {@link CommandSender}
+     * @return this {@link CommandParser} for method chaining
+     */
     public CommandParser sentFrom(CommandSender commandSender) {
         this.commandSender = commandSender;
         return this;
     }
 
+    /**
+     * Sets the label of the parsed command
+     *
+     * @param alias the label
+     * @return this {@link CommandParser} for method chaining
+     */
     public CommandParser labelled(String alias) {
         this.alias = alias;
         return this;
     }
 
+    /**
+     * Sets the arguments of the parsed command
+     *
+     * @param arguments the arguments
+     * @return this {@link CommandParser} for method chaining
+     */
     public CommandParser with(String[] arguments) {
         this.arguments = arguments;
         return this;
     }
 
+    /**
+     * Gets a {@link AwesomeCommandExecutor} instance that was parsed
+     *
+     * @return a parsed {@link AwesomeCommandExecutor} instance, with all annotated fields properly set. If the given command specification does not implement the {@link AwesomeCommandExecutor} interface, a null is returned.
+     */
     public AwesomeCommandExecutor getCommandExecutor() {
         if (!AwesomeCommandExecutor.class.isAssignableFrom(commandSpecification)) {
             return null;
@@ -55,6 +93,11 @@ public class CommandParser {
         }
     }
 
+    /**
+     * Gets a {@link AwesomeTabCompleter} instance that was parsed
+     *
+     * @return a parsed {@link AwesomeTabCompleter} instance, with all annotated fields properly set. If the given command specification does not implement the {@link AwesomeTabCompleter} interface, a null is returned.
+     */
     public AwesomeTabCompleter getTabCompleter() {
         if (!AwesomeTabCompleter.class.isAssignableFrom(commandSpecification)) {
             return null;

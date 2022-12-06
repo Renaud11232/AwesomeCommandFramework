@@ -1,107 +1,125 @@
 # AwesomeCommand Framework [![Build Status](https://travis-ci.org/Renaud11232/AwesomeCommandFramework.svg?branch=master)](https://travis-ci.org/Renaud11232/AwesomeCommandFramework) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UD54SHVYDV6NU&source=url)
 
-AwesomeCommand Framework is a Bukkit/Spigot framework that can be used to build any Bukkit plugin needing to use commands and sub commands.
+AwesomeCommand Framework is a Bukkit/Spigot framework that can be used to build any Bukkit plugin needing to use
+commands and sub commands.
 
 ### *AwesomeCommand Framework Goals*
-  * Provide a clear and easy way to define plugin commands and sub commands.
-  * Provide a simple way to manage command (and sub command) autocompletion.
-  * Make commands and sub commands easy to maintain, or add.
-  * Making the implementation of these sub commands as close as the regular commands.
+
+* Provide a clear and easy way to define plugin commands and sub commands.
+* Provide a simple way to manage command (and sub command) autocompletion.
+* Make commands and sub commands easy to maintain, or add.
+* Making the implementation of these sub commands as close as the regular commands.
 
 ### *How to use*
 
-This framework gives a way to create sub commands the same way regular commands are created using the original Bukkit classes.
+This framework gives a way to describe command using classes and annotations.
 
-##### plugin.yml
+###### Javadoc :
 
+The API documentation can be found [here](https://renaud11232.github.io/AwesomeCommandFramework)
 
-First, you'll need to define your sub commands in your `plugin.yml` file.
-To define sub commands simply add a `subcommands` object. A sub command can also have sub commands.
+###### Example :
 
-Sample file:
+The following example will create aplugin with one commands and two subcommands :
+
+* cmd1
+  * sub1
+  * sub2
+
+`plugin.yml` :
 
 ```yaml
-main: com.example.plugin.MyAwesomePlugin
-name: AwesomePlugin
-version: 1.0
+#...
 commands:
-    foo:
-        description: Foo desc
-        usage: /<command>
-        permission: complex.foo
-        subcommands:
-            foobar:
-                description: Foobar desc
-                permission: complex.foo.bar
-                aliases:
-                    - fb
-                    - foba
-    bar:
-        description: Bar desc
-        usage: /<command>
-        permission: complex.bar
-        aliases: aliasbar
-
+  cmd1:
+    description: Command 1
+    usage: /<command>
+    permission: awesome.cmd1
+#...
 ```
 
-Each sub command have the same attributes than a regular command.
+`AwesomePlugin.java` :
 
-##### CommandExecutor and TabCompleter
-
-Once you have defined your commands in the `plugin.yml` file, you can attach to each of these commands `CommandExecutor`'s and `TabCompleter`'s using
-the `getAwesomeCommand(String name)`method which works like the usual `getCommand(String name)`.
-
-For instance :
 ```java
 public class MyAwesomePlugin extends AwesomePlugin {
-    @Override
-    public void onEnable() {
-        getAwesomeCommand("foo").setExecutor((commandSender, command, s, strings) -> {
-            commandSender.sendMessage("foo");
-            return true;
-        });
-        getAwesomeCommand("foo.foobar").setExecutor((commandSender, command, s, strings) -> {
-            commandSender.sendMessage("foo foobar");
-            return true;
-        });
-        getAwesomeCommand("bar").setExecutor((commandSender, command, s, strings) -> {
-            commandSender.sendMessage("bar");
-            return true;
-        });
-    }
+
+  @Override
+  public void onEnable() {
+    initCommand(Command1.class);
+  }
+
 }
 ```
-Notice the `getAwesomeCommand("foo.foobar")`. When referencing sub commands you need to use `.` to separate parent commands from their sub commands.
 
-The exact same thing can be done to add a `TabCompleter` to a command or sub command, just use `setTabCompleter(TabCompleter completer)` instead of `setExecutor(CommandExecutor executor)`.
+`Command1.java` :
 
-Be aware that the old `getCommand(String name)` is now deprecated and will always throw an `UnsupportedOperationException`.
+```java
 
-##### Constants
+@AwesomeCommand(
+        name = "cmd1",
+        description = "Command 1",
+        permission = "awesome.cmd1",
+        subCommands = {
+                Sub1.class,
+                Sub2.class
+        }
+)
+public class Command1 {
+}
 
-There are 4 basic executors and completers that might be useful :
-  * `AwesomeCommand.DEFAULT_EXECUTOR` : `CommandExecutor`that has the same behavior as the default one, which always returns false.
-  * `AwesomeCommand.NO_EXECUTOR` : `CommandExecutor`which always returns true.
-  * `AwesomeCommand.DEFAULT_COMPLETER` : `TabCompleter`that has the same behavior as the default one, which always returns null.
-  * `AwesomeCommand.NO_COMPLETER` : `TabCompleter` which always returns an empty list.
-
-
-### *License*
-
-AwesomeCommand Framework is released under the [MIT](https://opensource.org/licenses/MIT) license
 ```
-Copyright (c) 2018 R. Gaspard
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-persons to whom the Software is furnished to do so, subject to the following conditions:
+`Sub1.java` :
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-Software.
+```java
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+@AwesomeCommand(
+        name = "sub1",
+        description = "Subcommand 1",
+        permission = "awesome.cmd1.sub1"
+)
+public class Sub1 implements AwesomeCommandExecutor, AwesomeTabCompleter {
+
+  @CommandSenderParameter
+  private CommandSender commandSender;
+
+  @Override
+  public boolean execute() {
+    commandSender.sendMessage("command 1 > subcommand 1");
+    return true;
+  }
+
+  @Override
+  public List<String> tabComplete() {
+    return Collections.emptyList();
+  }
+}
+```
+
+`Sub2.java` :
+
+```java
+
+@AwesomeCommand(
+        name = "sub2",
+        description = "Subcommand 2",
+        permission = "awesome.cmd1.sub2"
+)
+public class Sub2 implements AwesomeCommandExecutor, AwesomeTabCompleter {
+
+  @CommandSenderParameter
+  private CommandSender commandSender;
+
+  @Override
+  public boolean execute() {
+    commandSender.sendMessage("command 1 > subcommand 2");
+    return true;
+  }
+
+  @Override
+  public List<String> tabComplete() {
+    return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+  }
+}
+
 ```

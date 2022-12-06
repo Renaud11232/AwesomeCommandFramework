@@ -15,10 +15,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+/**
+ * Processor implementation that prevents invalid annotation usage
+ */
 @SupportedAnnotationTypes("be.renaud11232.awesomecommand.annotation.args.*")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ArgAnnotationProcessor extends AbstractProcessor {
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see AbstractProcessor#process(Set, RoundEnvironment)
+     */
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         annotations.forEach(annotation -> ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(annotation)).forEach(field -> {

@@ -7,6 +7,9 @@ import org.bukkit.command.*;
 
 import java.util.*;
 
+/**
+ * The {@link ComplexCommand} class defines a command that is based on a command specification class.
+ */
 public class ComplexCommand extends Command {
 
     private final Class<?> commandClass;
@@ -14,6 +17,11 @@ public class ComplexCommand extends Command {
 
     private final Map<String, ComplexCommand> subCommands;
 
+    /**
+     * Constructs a new {@link ComplexCommand}
+     *
+     * @param commandClass the command specification class. This class must be annotated with {@link AwesomeCommand}
+     */
     public ComplexCommand(Class<?> commandClass) {
         this(commandClass, AnnotationUtil.getCommandAnnotation(commandClass));
     }
@@ -48,6 +56,11 @@ public class ComplexCommand extends Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see Command#execute(CommandSender, String, String[])
+     */
     @Override
     public boolean execute(CommandSender sender, String alias, String[] args) {
         if (testPermission(sender)) {
@@ -64,6 +77,11 @@ public class ComplexCommand extends Command {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see Command#tabComplete(CommandSender, String, String[])
+     */
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         if (args.length > 0 && testPermissionSilent(sender)) {
