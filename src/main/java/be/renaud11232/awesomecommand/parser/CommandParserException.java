@@ -10,6 +10,7 @@ public class CommandParserException extends RuntimeException {
      *
      * @see RuntimeException#RuntimeException()
      */
+    @SuppressWarnings("unused")
     public CommandParserException() {
         super();
     }
@@ -19,6 +20,7 @@ public class CommandParserException extends RuntimeException {
      *
      * @see RuntimeException#RuntimeException(String)
      */
+    @SuppressWarnings("unused")
     public CommandParserException(String message) {
         super(message);
     }
@@ -37,6 +39,7 @@ public class CommandParserException extends RuntimeException {
      *
      * @see RuntimeException#RuntimeException(Throwable)
      */
+    @SuppressWarnings("unused")
     public CommandParserException(Throwable cause) {
         super(cause);
     }
@@ -46,6 +49,7 @@ public class CommandParserException extends RuntimeException {
      *
      * @see RuntimeException#RuntimeException(String, Throwable, boolean, boolean)
      */
+    @SuppressWarnings("unused")
     protected CommandParserException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * The {@link AwesomePlugin} class is the base class for any plugin that wants to make use of the AwesomeCommandFramework
  * This class is meant to be used the same way as the usual {@link JavaPlugin} class, and just provides one additional utility to initialize commands
  */
+@SuppressWarnings("unused")
 public abstract class AwesomePlugin extends JavaPlugin {
 
     /**
