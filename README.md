@@ -1,4 +1,4 @@
-# AwesomeCommand Framework [![Build Status](https://travis-ci.org/Renaud11232/AwesomeCommandFramework.svg?branch=master)](https://travis-ci.org/Renaud11232/AwesomeCommandFramework) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UD54SHVYDV6NU&source=url)
+# AwesomeCommand Framework [![Build](https://github.com/Renaud11232/AwesomeCommandFramework/actions/workflows/build.yml/badge.svg)](https://github.com/Renaud11232/AwesomeCommandFramework/actions/workflows/build.yml) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UD54SHVYDV6NU&source=url)
 
 AwesomeCommand Framework is a Bukkit/Spigot framework that can be used to build any Bukkit plugin needing to use
 commands and sub commands.
