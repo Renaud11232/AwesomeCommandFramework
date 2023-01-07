@@ -148,7 +148,7 @@ public class CommandParser {
         for (Class<? extends Annotation> annotation : annotationSet) {
             if (field.isAnnotationPresent(annotation)) {
                 if (firstFoundAnnotation != null) {
-                    throw new CommandParserException("Incompatible annotations " + firstFoundAnnotation.getName() + " and " + annotation.getName() + " were found on field " + field.getName());
+                    throw new CommandParserException("Incompatible annotations " + firstFoundAnnotation.getName() + " and " + annotation.getName() + " were found on field " + field.getName() + " of class " + field.getDeclaringClass().getName());
                 } else {
                     firstFoundAnnotation = annotation;
                 }
