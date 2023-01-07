@@ -6,8 +6,12 @@ import be.renaud11232.awesomecommand.annotation.args.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
@@ -114,6 +118,7 @@ public class CommandParser {
 
     private <T> void populateInstance(T instance) {
         for (Field field : instance.getClass().getDeclaredFields()) {
+            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, AliasParameter.class, Arguments.class, CommandParameter.class);
             if (field.getAnnotation(CommandSenderParameter.class) != null) {
                 setField(instance, field, commandSender);
             } else if (field.getAnnotation(AliasParameter.class) != null) {
@@ -132,6 +137,22 @@ public class CommandParser {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             throw new CommandParserException("Unable to populate field " + field.getName() + " for class " + instance.getClass().getName(), e);
+        }
+    }
+
+    @SafeVarargs
+    private final void ensureOnlyOneFieldAnnotationOf(Field field, Class<? extends Annotation>... annotations) {
+        Set<Class<? extends Annotation>> annotationSet = new HashSet<>();
+        Collections.addAll(annotationSet, annotations);
+        Class<? extends Annotation> firstFoundAnnotation = null;
+        for (Class<? extends Annotation> annotation : annotationSet) {
+            if (field.isAnnotationPresent(annotation)) {
+                if (firstFoundAnnotation != null) {
+                    throw new CommandParserException("Incompatible annotations " + firstFoundAnnotation.getName() + " and " + annotation.getName() + " were found on field " + field.getName());
+                } else {
+                    firstFoundAnnotation = annotation;
+                }
+            }
         }
     }
 
