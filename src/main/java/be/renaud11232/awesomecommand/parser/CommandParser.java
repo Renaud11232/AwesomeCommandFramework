@@ -5,6 +5,7 @@ import be.renaud11232.awesomecommand.AwesomeTabCompleter;
 import be.renaud11232.awesomecommand.annotation.args.*;
 import be.renaud11232.awesomecommand.adapter.ArgumentValueAdapter;
 import be.renaud11232.awesomecommand.adapter.UnsupportedTypeAdapterException;
+import be.renaud11232.awesomecommand.util.Constants;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -144,16 +145,18 @@ public class CommandParser {
         positionalArguments.forEach(positionalArgument -> {
             PositionalArgument annotation = positionalArgument.getAnnotation(PositionalArgument.class);
             try {
-                setFieldUsingAdapter(positionalArgument, instance, arguments[annotation.position()], annotation.adaper());
+                setField(positionalArgument, instance, arguments[annotation.position()], annotation.adapter());
             } catch (ArrayIndexOutOfBoundsException e) {
                 if (annotation.required()) {
                     throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + " of class " + instance.getClass().getName() + ". Not enough arguments were provided", e);
+                } else if (!Constants.NO_VALUE.equals(annotation.defaultValue())) {
+                    setField(positionalArgument, instance, annotation.defaultValue(), annotation.adapter());
                 }
             }
         });
     }
 
-    private <T> void setFieldUsingAdapter(Field field, T instance, String value, Class<? extends ArgumentValueAdapter> adapterType) {
+    private <T> void setField(Field field, T instance, String value, Class<? extends ArgumentValueAdapter> adapterType) {
         if (field.getType().isAssignableFrom(String.class)) {
             setField(instance, field, value);
         } else {
