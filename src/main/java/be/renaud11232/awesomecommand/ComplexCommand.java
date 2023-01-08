@@ -65,7 +65,11 @@ public class ComplexCommand extends Command {
     public boolean execute(CommandSender sender, String alias, String[] args) {
         if (testPermission(sender)) {
             if (args.length == 0 || !subCommands.containsKey(args[0])) {
-                AwesomeCommandExecutor commandExecutor = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
+                AwesomeCommandExecutor commandExecutor = null;
+                try {
+                    commandExecutor = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
+                } catch (IllegalArgumentException ignored) {
+                }
                 if ((commandExecutor == null || !commandExecutor.execute()) && !awesomeCommand.usage().isEmpty()) {
                     Arrays.stream(awesomeCommand.usage().replace("<command>", alias).split("\r?\n"))
                             .forEach(sender::sendMessage);
@@ -95,7 +99,11 @@ public class ComplexCommand extends Command {
                             .filter(subCommand -> subCommand.startsWith(args[0]))
                             .forEach(completionSet::add);
                 }
-                AwesomeTabCompleter tabCompleter = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
+                AwesomeTabCompleter tabCompleter = null;
+                try {
+                    tabCompleter = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
+                } catch (IllegalArgumentException ignored) {
+                }
                 if (tabCompleter != null) {
                     List<String> otherCompletions = tabCompleter.tabComplete();
                     if (otherCompletions == null) {
