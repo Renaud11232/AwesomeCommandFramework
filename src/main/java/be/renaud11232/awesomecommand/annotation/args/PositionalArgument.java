@@ -32,7 +32,7 @@ public @interface PositionalArgument {
 
     /**
      * The default value to use if the argument was not provided.
-     * If required, the corresponding {@link ArgumentValueAdapter} will be used to convert the argument to the correct
+     * If required, the corresponding {@link PositionalArgument#adapter} will be used to convert the argument to the correct
      * type.
      *
      * @return the default value
