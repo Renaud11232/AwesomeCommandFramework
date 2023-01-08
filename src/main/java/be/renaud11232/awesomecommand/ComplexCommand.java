@@ -14,7 +14,6 @@ public class ComplexCommand extends Command {
 
     private final Class<?> commandClass;
     private final AwesomeCommand awesomeCommand;
-
     private final Map<String, ComplexCommand> subCommands;
 
     /**

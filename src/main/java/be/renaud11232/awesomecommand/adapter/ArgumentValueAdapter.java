@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * The {@link ArgumentValueAdapter} is used to transform the {@link String} arguments before assigning them to a {@link Field}
  * to a compatible type.
  */
-public interface ArgumentValueAdapter {
+public interface ArgumentValueAdapter<T> {
 
     /**
      * Converts the provided {@link String} value to an {@link Object} of any Type in order to assign to a provided {@link Field}
@@ -16,7 +16,7 @@ public interface ArgumentValueAdapter {
      * @return the converted object
      * @throws UnsupportedTypeAdapterException if this {@link ArgumentValueAdapter} cannot convert the argument to the desired type
      */
-    Object apply(String value, Field field) throws UnsupportedTypeAdapterException;
+    T apply(String value, Field field) throws UnsupportedTypeAdapterException;
 
 
 }
