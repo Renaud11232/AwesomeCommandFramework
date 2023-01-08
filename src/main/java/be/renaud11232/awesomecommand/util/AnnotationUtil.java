@@ -1,4 +1,4 @@
-package be.renaud11232.awesomecommand.annotation.util;
+package be.renaud11232.awesomecommand.util;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
 

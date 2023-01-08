@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to describe a field containing the {@link org.bukkit.command.CommandSender} object of the executed command.
- * The field must be a {@link org.bukkit.command.CommandExecutor}.
+ * The field must be a {@link org.bukkit.command.CommandSender} (or compatible).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

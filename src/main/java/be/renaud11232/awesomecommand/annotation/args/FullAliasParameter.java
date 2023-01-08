@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to describe a field containing all the aliases of the currently executed command chain in the order of which they appeared.
- * The field must be an array of {@link String}.
+ * The field must be an array of {@link String} or a {@link java.util.List} of {@link String} (or compatible).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

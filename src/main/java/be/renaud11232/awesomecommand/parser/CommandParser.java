@@ -3,15 +3,16 @@ package be.renaud11232.awesomecommand.parser;
 import be.renaud11232.awesomecommand.AwesomeCommandExecutor;
 import be.renaud11232.awesomecommand.AwesomeTabCompleter;
 import be.renaud11232.awesomecommand.annotation.args.*;
+import be.renaud11232.awesomecommand.adapter.ArgumentValueAdapter;
+import be.renaud11232.awesomecommand.adapter.UnsupportedTypeAdapterException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
@@ -20,7 +21,7 @@ import java.util.Set;
 public class CommandParser {
 
     private CommandSender commandSender;
-    private String alias;
+    private String[] aliases;
     private String[] arguments;
     private final Class<?> commandSpecification;
     private Command command;
@@ -63,7 +64,7 @@ public class CommandParser {
      * @return this {@link CommandParser} for method chaining
      */
     public CommandParser labelled(String alias) {
-        this.alias = alias;
+        this.aliases = alias.split(" ");
         return this;
     }
 
@@ -73,7 +74,7 @@ public class CommandParser {
      * @param arguments the arguments
      * @return this {@link CommandParser} for method chaining
      */
-    public CommandParser with(String[] arguments) {
+    public CommandParser with(String... arguments) {
         this.arguments = arguments;
         return this;
     }
@@ -93,7 +94,7 @@ public class CommandParser {
             populateInstance(commandExecutor);
             return commandExecutor;
         } catch (Throwable t) {
-            throw new CommandParserException("Unable to create AwesomeCommandExecutor instance :", t);
+            throw new CommandParserException("Unable to create AwesomeCommandExecutor instance", t);
         }
     }
 
@@ -117,20 +118,98 @@ public class CommandParser {
     }
 
     private <T> void populateInstance(T instance) {
+        List<Field> positionalArguments = new ArrayList<>();
         for (Field field : instance.getClass().getDeclaredFields()) {
-            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, FullAliasParameter.class, Arguments.class, CommandParameter.class, AliasParameter.class);
-            if (field.getAnnotation(CommandSenderParameter.class) != null) {
+            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, FullAliasParameter.class, Arguments.class, CommandParameter.class, AliasParameter.class, PositionalArgument.class);
+            if (field.isAnnotationPresent(CommandSenderParameter.class)) {
                 setField(instance, field, commandSender);
-            } else if (field.getAnnotation(AliasParameter.class) != null) {
-                String[] aliases = alias.split(" ");
+            } else if (field.isAnnotationPresent(AliasParameter.class)) {
                 setField(instance, field, aliases[aliases.length - 1]);
-            } else if (field.getAnnotation(FullAliasParameter.class) != null) {
-                setField(instance, field, alias.split(" "));
-            } else if (field.getAnnotation(Arguments.class) != null) {
-                setField(instance, field, arguments);
-            } else if (field.getAnnotation(CommandParameter.class) != null) {
+            } else if (field.isAnnotationPresent(FullAliasParameter.class)) {
+                setFullAliasParameterField(instance, field);
+            } else if (field.isAnnotationPresent(Arguments.class)) {
+                setArgumentsField(instance, field);
+            } else if (field.isAnnotationPresent(PositionalArgument.class)) {
+                positionalArguments.add(field);
+            } else if (field.isAnnotationPresent(CommandParameter.class)) {
                 setField(instance, field, command);
             }
+            setPositionalArguments(positionalArguments, instance);
+        }
+    }
+
+    private <T> void setPositionalArguments(List<Field> positionalArguments, T instance) {
+        positionalArguments.sort(Comparator.comparingInt(field -> field.getAnnotation(PositionalArgument.class).position()));
+        ensureOptionalPositionalArgumentsPlacement(positionalArguments);
+        positionalArguments.forEach(positionalArgument -> {
+            PositionalArgument annotation = positionalArgument.getAnnotation(PositionalArgument.class);
+            try {
+                setFieldUsingAdapter(positionalArgument, instance, arguments[annotation.position()], annotation.adaper());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                if (annotation.required()) {
+                    throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + " of class " + instance.getClass().getName() + ". Not enough arguments were provided", e);
+                }
+            }
+        });
+    }
+
+    private <T> void setFieldUsingAdapter(Field field, T instance, String value, Class<? extends ArgumentValueAdapter> adapterType) {
+        if (field.getType().isAssignableFrom(String.class)) {
+            setField(instance, field, value);
+        } else {
+            ArgumentValueAdapter adapter;
+            try {
+                Constructor<? extends ArgumentValueAdapter> constructor = adapterType.getConstructor();
+                constructor.setAccessible(true);
+                adapter = constructor.newInstance();
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException e) {
+                throw new CommandParserException("Unable to create instance of " + adapterType.getName(), e);
+            }
+            try {
+                setField(instance, field, adapter.apply(value, field));
+            } catch (UnsupportedTypeAdapterException e) {
+                throw new CommandParserException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName(), e);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidCommandUsageException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName() + ". Argument value was invalid", e);
+            }
+        }
+    }
+
+    private void ensureOptionalPositionalArgumentsPlacement(List<Field> positionalArguments) {
+        Field lastOptionalArgument = null;
+        Field previousArgument = null;
+        Integer previousArgumentPosition = null;
+        for (Field positionalArgument : positionalArguments) {
+            PositionalArgument annotation = positionalArgument.getAnnotation(PositionalArgument.class);
+            if (previousArgumentPosition != null && previousArgumentPosition == annotation.position()) {
+                throw new CommandParserException("Incorrect positional argument position : " + previousArgument.getName() + " and " + positionalArgument.getName() + " are both at position " + previousArgumentPosition + " in class " + positionalArgument.getDeclaringClass().getName());
+            }
+            if (annotation.required()) {
+                if (lastOptionalArgument != null) {
+                    throw new CommandParserException("Incorrect positional argument order : Required positional argument " + positionalArgument.getName() + " found after optional positional argument " + lastOptionalArgument.getName() + " in class " + positionalArgument.getDeclaringClass().getName());
+                }
+            } else {
+                lastOptionalArgument = positionalArgument;
+            }
+            previousArgumentPosition = annotation.position();
+            previousArgument = positionalArgument;
+        }
+    }
+
+    private <T> void setArgumentsField(T instance, Field field) {
+        if (field.getType().isArray()) {
+            setField(instance, field, arguments);
+        } else {
+            setField(instance, field, Arrays.asList(arguments));
+        }
+    }
+
+    private <T> void setFullAliasParameterField(T instance, Field field) {
+        if (field.getType().isArray()) {
+            setField(instance, field, aliases);
+        } else {
+            setField(instance, field, Arrays.asList(aliases));
         }
     }
 
@@ -139,7 +218,7 @@ public class CommandParser {
             field.setAccessible(true);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new CommandParserException("Unable to populate field " + field.getName() + " for class " + instance.getClass().getName(), e);
+            throw new CommandParserException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName(), e);
         }
     }
 

@@ -1,7 +1,7 @@
 package be.renaud11232.awesomecommand;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
-import be.renaud11232.awesomecommand.annotation.util.AnnotationUtil;
+import be.renaud11232.awesomecommand.util.AnnotationUtil;
 import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
 
