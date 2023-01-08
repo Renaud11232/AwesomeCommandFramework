@@ -118,11 +118,14 @@ public class CommandParser {
 
     private <T> void populateInstance(T instance) {
         for (Field field : instance.getClass().getDeclaredFields()) {
-            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, AliasParameter.class, Arguments.class, CommandParameter.class);
+            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, FullAliasParameter.class, Arguments.class, CommandParameter.class, AliasParameter.class);
             if (field.getAnnotation(CommandSenderParameter.class) != null) {
                 setField(instance, field, commandSender);
             } else if (field.getAnnotation(AliasParameter.class) != null) {
-                setField(instance, field, alias);
+                String[] aliases = alias.split(" ");
+                setField(instance, field, aliases[aliases.length - 1]);
+            } else if (field.getAnnotation(FullAliasParameter.class) != null) {
+                setField(instance, field, alias.split(" "));
             } else if (field.getAnnotation(Arguments.class) != null) {
                 setField(instance, field, arguments);
             } else if (field.getAnnotation(CommandParameter.class) != null) {
