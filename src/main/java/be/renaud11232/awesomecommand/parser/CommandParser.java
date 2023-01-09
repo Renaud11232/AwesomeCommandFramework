@@ -5,6 +5,7 @@ import be.renaud11232.awesomecommand.AwesomeTabCompleter;
 import be.renaud11232.awesomecommand.annotation.args.*;
 import be.renaud11232.awesomecommand.adapter.ArgumentValueAdapter;
 import be.renaud11232.awesomecommand.adapter.UnsupportedTypeAdapterException;
+import be.renaud11232.awesomecommand.util.CommandTokenizer;
 import be.renaud11232.awesomecommand.util.Constants;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -76,7 +77,7 @@ public class CommandParser {
      * @return this {@link CommandParser} for method chaining
      */
     public CommandParser with(String... arguments) {
-        this.arguments = arguments;
+        this.arguments = new CommandTokenizer(arguments).tokenize();
         return this;
     }
 
@@ -156,13 +157,13 @@ public class CommandParser {
         });
     }
 
-    private <T> void setField(Field field, T instance, String value, Class<? extends ArgumentValueAdapter> adapterType) {
+    private <T> void setField(Field field, T instance, String value, Class<? extends ArgumentValueAdapter<?>> adapterType) {
         if (field.getType().isAssignableFrom(String.class)) {
             setField(instance, field, value);
         } else {
-            ArgumentValueAdapter adapter;
+            ArgumentValueAdapter<?> adapter;
             try {
-                Constructor<? extends ArgumentValueAdapter> constructor = adapterType.getConstructor();
+                Constructor<? extends ArgumentValueAdapter<?>> constructor = adapterType.getConstructor();
                 constructor.setAccessible(true);
                 adapter = constructor.newInstance();
             } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |

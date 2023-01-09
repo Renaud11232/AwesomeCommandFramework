@@ -45,5 +45,5 @@ public @interface PositionalArgument {
      *
      * @return the {@link ArgumentValueAdapter} to use for the type conversion of the command arguments
      */
-    Class<? extends ArgumentValueAdapter> adapter() default DefaultArgumentValueAdapter.class;
+    Class<? extends ArgumentValueAdapter<?>> adapter() default DefaultArgumentValueAdapter.class;
 }
