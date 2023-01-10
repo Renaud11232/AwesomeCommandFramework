@@ -15,8 +15,9 @@ public interface ArgumentValueAdapter<T> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted object
      * @throws UnsupportedTypeAdapterException if this {@link ArgumentValueAdapter} cannot convert the argument to the desired type
+     * @throws IllegalArgumentException        if the value was not convertible to the desired type
      */
-    T apply(String value, Field field) throws UnsupportedTypeAdapterException;
+    T apply(String value, Field field) throws UnsupportedTypeAdapterException, IllegalArgumentException;
 
 
 }

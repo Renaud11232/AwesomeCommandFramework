@@ -2,6 +2,7 @@ package be.renaud11232.awesomecommand;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
 import be.renaud11232.awesomecommand.parser.CommandParserException;
+import be.renaud11232.awesomecommand.parser.InvalidCommandUsageException;
 import be.renaud11232.awesomecommand.util.AnnotationUtil;
 import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
@@ -70,7 +71,7 @@ public class ComplexCommand extends Command {
                 AwesomeCommandExecutor commandExecutor = null;
                 try {
                     commandExecutor = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getCommandExecutor();
-                } catch (IllegalArgumentException ignored) {
+                } catch (InvalidCommandUsageException ignored) {
                 }
                 if ((commandExecutor == null || !commandExecutor.execute()) && !awesomeCommand.usage().isEmpty()) {
                     Arrays.stream(awesomeCommand.usage().replace("<command>", alias).split("\r?\n"))
@@ -105,7 +106,7 @@ public class ComplexCommand extends Command {
                 AwesomeTabCompleter tabCompleter = null;
                 try {
                     tabCompleter = new CommandParser(commandClass).forCommand(this).labelled(alias).sentFrom(sender).with(args).getTabCompleter();
-                } catch (IllegalArgumentException ignored) {
+                } catch (InvalidCommandUsageException ignored) {
                 }
                 if (tabCompleter != null) {
                     List<String> otherCompletions = tabCompleter.tabComplete();

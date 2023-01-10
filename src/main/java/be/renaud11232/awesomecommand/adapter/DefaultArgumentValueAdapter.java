@@ -23,6 +23,7 @@ public final class DefaultArgumentValueAdapter implements ArgumentValueAdapter<O
      * @throws NumberFormatException           if the string does not contain a parsable {@link Number} depending on the {@link Field} type
      * @throws NullPointerException            if the value is null
      * @throws UnsupportedTypeAdapterException if the type of the {@link Field} is incompatible with all supported types.
+     * @throws IllegalArgumentException        if the string cannot be parsed to the desired {@link Field} type
      */
     @Override
     public Object apply(String value, Field field) throws UnsupportedTypeAdapterException, NumberFormatException, NullPointerException {

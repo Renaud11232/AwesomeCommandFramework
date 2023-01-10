@@ -5,7 +5,8 @@ import be.renaud11232.awesomecommand.AwesomeTabCompleter;
 import be.renaud11232.awesomecommand.annotation.args.*;
 import be.renaud11232.awesomecommand.adapter.ArgumentValueAdapter;
 import be.renaud11232.awesomecommand.adapter.UnsupportedTypeAdapterException;
-import be.renaud11232.awesomecommand.util.CommandTokenizer;
+import be.renaud11232.awesomecommand.tokenizer.CommandTokenizer;
+import be.renaud11232.awesomecommand.tokenizer.TokenizerException;
 import be.renaud11232.awesomecommand.util.Constants;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -75,10 +76,14 @@ public class CommandParser {
      *
      * @param arguments the arguments
      * @return this {@link CommandParser} for method chaining
-     * @throws IllegalArgumentException if the provided command is improperly formatted
+     * @throws InvalidCommandUsageException if the provided command is improperly formatted
      */
-    public CommandParser with(String... arguments) throws IllegalArgumentException {
-        this.arguments = new CommandTokenizer(arguments).tokenize();
+    public CommandParser with(String... arguments) throws InvalidCommandUsageException {
+        try {
+            this.arguments = new CommandTokenizer(arguments).tokenize();
+        } catch (TokenizerException e) {
+            throw new InvalidCommandUsageException(e.getMessage(), e);
+        }
         return this;
     }
 
@@ -101,7 +106,7 @@ public class CommandParser {
         } catch (InvalidCommandUsageException e) {
             throw e;
         } catch (IllegalArgumentException e) {
-            throw new InvalidCommandUsageException(e);
+            throw new InvalidCommandUsageException(e.getMessage(), e);
         } catch (Throwable t) {
             throw new CommandParserException("Unable to create AwesomeCommandExecutor instance", t);
         }

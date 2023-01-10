@@ -1,4 +1,4 @@
-package be.renaud11232.awesomecommand.util;
+package be.renaud11232.awesomecommand.tokenizer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,9 +40,9 @@ public class CommandTokenizer {
      * Produces an array of {@link String} representing the different tokens (arguments) of the command line
      *
      * @return the split command tokens
-     * @throws IllegalArgumentException if the provided command is improperly formatted
+     * @throws TokenizerException if the provided command is improperly formatted
      */
-    public String[] tokenize() throws IllegalArgumentException {
+    public String[] tokenize() throws TokenizerException {
         List<String> result = new LinkedList<>();
         StringBuilder currentToken = new StringBuilder();
         boolean escaped = false;
@@ -67,7 +67,7 @@ public class CommandTokenizer {
                         } else if (c == '\\') {
                             i++;
                             if (i >= commandLine.length()) {
-                                throw new IllegalArgumentException("Unexpected end of input : Missing escaped character");
+                                throw new TokenizerException("Unexpected end of input : Missing escaped character");
                             }
                             char next = commandLine.charAt(i);
                             if (next == '"' || next == '\\') {
@@ -107,10 +107,10 @@ public class CommandTokenizer {
             }
         }
         if (state == State.SINGLE_QUOTE) {
-            throw new IllegalArgumentException("Unexpected end of input : Unclosed single quotes");
+            throw new TokenizerException("Unexpected end of input : Unclosed single quotes");
         }
         if (state == State.DOUBLE_QUOTE) {
-            throw new IllegalArgumentException("Unexpected end of input : Unclosed double quotes");
+            throw new TokenizerException("Unexpected end of input : Unclosed double quotes");
         }
         if (escaped) {
             currentToken.append('\\');
