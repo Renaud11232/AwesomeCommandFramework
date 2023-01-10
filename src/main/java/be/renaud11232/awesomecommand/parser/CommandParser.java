@@ -75,8 +75,9 @@ public class CommandParser {
      *
      * @param arguments the arguments
      * @return this {@link CommandParser} for method chaining
+     * @throws IllegalArgumentException if the provided command is improperly formatted
      */
-    public CommandParser with(String... arguments) {
+    public CommandParser with(String... arguments) throws IllegalArgumentException {
         this.arguments = new CommandTokenizer(arguments).tokenize();
         return this;
     }
@@ -85,8 +86,10 @@ public class CommandParser {
      * Gets a {@link AwesomeCommandExecutor} instance that was parsed
      *
      * @return a parsed {@link AwesomeCommandExecutor} instance, with all annotated fields properly set. If the given command specification does not implement the {@link AwesomeCommandExecutor} interface, a null is returned.
+     * @throws CommandParserException       if this {@link CommandParser} was unable to create a command instance due to improper configuration
+     * @throws InvalidCommandUsageException if this {@link CommandParser} was unable to create a command instance due to invalid command arguments
      */
-    public AwesomeCommandExecutor getCommandExecutor() {
+    public AwesomeCommandExecutor getCommandExecutor() throws CommandParserException, InvalidCommandUsageException {
         if (!AwesomeCommandExecutor.class.isAssignableFrom(commandSpecification)) {
             return null;
         }
@@ -95,6 +98,10 @@ public class CommandParser {
             AwesomeCommandExecutor commandExecutor = (AwesomeCommandExecutor) constructor.newInstance();
             populateInstance(commandExecutor);
             return commandExecutor;
+        } catch (InvalidCommandUsageException e) {
+            throw e;
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCommandUsageException(e);
         } catch (Throwable t) {
             throw new CommandParserException("Unable to create AwesomeCommandExecutor instance", t);
         }
@@ -104,8 +111,10 @@ public class CommandParser {
      * Gets a {@link AwesomeTabCompleter} instance that was parsed
      *
      * @return a parsed {@link AwesomeTabCompleter} instance, with all annotated fields properly set. If the given command specification does not implement the {@link AwesomeTabCompleter} interface, a null is returned.
+     * @throws CommandParserException       if this {@link CommandParser} was unable to create a command instance due to improper configuration
+     * @throws InvalidCommandUsageException if this {@link CommandParser} was unable to create a command instance due to invalid command arguments
      */
-    public AwesomeTabCompleter getTabCompleter() {
+    public AwesomeTabCompleter getTabCompleter() throws CommandParserException, InvalidCommandUsageException {
         if (!AwesomeTabCompleter.class.isAssignableFrom(commandSpecification)) {
             return null;
         }
@@ -114,6 +123,10 @@ public class CommandParser {
             AwesomeTabCompleter tabCompleter = (AwesomeTabCompleter) constructor.newInstance();
             populateInstance(tabCompleter);
             return tabCompleter;
+        } catch (InvalidCommandUsageException e) {
+            throw e;
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCommandUsageException(e);
         } catch (Throwable t) {
             throw new CommandParserException("Unable to create AwesomeTabCompleter instance :", t);
         }

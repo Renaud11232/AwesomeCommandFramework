@@ -19,8 +19,9 @@ public abstract class AwesomePlugin extends JavaPlugin {
      * Every time the command is executed or a tab completion is requested, an object will be created and used to hold the command parameters.
      *
      * @param commandClass the command specification class
+     * @throws NullPointerException if the specified command {@link Class} is null, or does not have the {@link AwesomeCommand} annotation
      */
-    public void initCommand(Class<?> commandClass) {
+    public void initCommand(Class<?> commandClass) throws NullPointerException {
         AwesomeCommand annotation = AnnotationUtil.getCommandAnnotation(commandClass);
         PluginCommand pluginCommand = getCommand(annotation.name());
         ComplexCommand awesomeCommand = new ComplexCommand(commandClass);

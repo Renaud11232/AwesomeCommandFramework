@@ -20,7 +20,7 @@ public class AnnotationUtil {
      * @return the {@link AwesomeCommand} annotation instance
      * @throws NullPointerException if the command specification class is not annotated with @{@link AwesomeCommand}
      */
-    public static AwesomeCommand getCommandAnnotation(Class<?> commandClass) {
+    public static AwesomeCommand getCommandAnnotation(Class<?> commandClass) throws NullPointerException {
         return Objects.requireNonNull(commandClass.getAnnotation(AwesomeCommand.class));
     }
 

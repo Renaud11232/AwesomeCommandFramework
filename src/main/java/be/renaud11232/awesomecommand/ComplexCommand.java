@@ -1,6 +1,7 @@
 package be.renaud11232.awesomecommand;
 
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
+import be.renaud11232.awesomecommand.parser.CommandParserException;
 import be.renaud11232.awesomecommand.util.AnnotationUtil;
 import be.renaud11232.awesomecommand.parser.CommandParser;
 import org.bukkit.command.*;
@@ -20,8 +21,9 @@ public class ComplexCommand extends Command {
      * Constructs a new {@link ComplexCommand}
      *
      * @param commandClass the command specification class. This class must be annotated with {@link AwesomeCommand}
+     * @throws NullPointerException if the given command {@link Class} does not have the {@link AwesomeCommand} annotation
      */
-    public ComplexCommand(Class<?> commandClass) {
+    public ComplexCommand(Class<?> commandClass) throws NullPointerException {
         this(commandClass, AnnotationUtil.getCommandAnnotation(commandClass));
     }
 
@@ -58,10 +60,11 @@ public class ComplexCommand extends Command {
     /**
      * {@inheritDoc}
      *
+     * @throws CommandParserException if the {@link Class} provided while constructing this {@link ComplexCommand} is improperly configured
      * @see Command#execute(CommandSender, String, String[])
      */
     @Override
-    public boolean execute(CommandSender sender, String alias, String[] args) {
+    public boolean execute(CommandSender sender, String alias, String[] args) throws CommandParserException {
         if (testPermission(sender)) {
             if (args.length == 0 || !subCommands.containsKey(args[0])) {
                 AwesomeCommandExecutor commandExecutor = null;
@@ -83,10 +86,11 @@ public class ComplexCommand extends Command {
     /**
      * {@inheritDoc}
      *
+     * @throws CommandParserException if the {@link Class} provided while constructing this {@link ComplexCommand} is improperly configured
      * @see Command#tabComplete(CommandSender, String, String[])
      */
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws CommandParserException {
         if (args.length > 0 && testPermissionSilent(sender)) {
             if (subCommands.containsKey(args[0])) {
                 return subCommands.get(args[0]).tabComplete(sender, alias + " " + args[0], Arrays.copyOfRange(args, 1, args.length));
