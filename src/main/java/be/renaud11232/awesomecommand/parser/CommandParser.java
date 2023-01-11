@@ -16,6 +16,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
@@ -139,8 +140,9 @@ public class CommandParser {
 
     private <T> void populateInstance(T instance) {
         List<Field> positionalArguments = new ArrayList<>();
+        List<Field> namedArguments = new ArrayList<>();
         for (Field field : instance.getClass().getDeclaredFields()) {
-            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, FullAliasParameter.class, Arguments.class, CommandParameter.class, AliasParameter.class, PositionalArgument.class);
+            ensureOnlyOneFieldAnnotationOf(field, CommandSenderParameter.class, FullAliasParameter.class, Arguments.class, CommandParameter.class, AliasParameter.class, PositionalArgument.class, NamedArgument.class);
             if (field.isAnnotationPresent(CommandSenderParameter.class)) {
                 setField(instance, field, commandSender);
             } else if (field.isAnnotationPresent(AliasParameter.class)) {
@@ -151,21 +153,48 @@ public class CommandParser {
                 setArgumentsField(instance, field);
             } else if (field.isAnnotationPresent(PositionalArgument.class)) {
                 positionalArguments.add(field);
+            } else if (field.isAnnotationPresent(NamedArgument.class)) {
+                namedArguments.add(field);
             } else if (field.isAnnotationPresent(CommandParameter.class)) {
                 setField(instance, field, command);
             }
-            setPositionalArguments(positionalArguments, instance);
         }
+        List<String> availableArguments = new LinkedList<>();
+        Collections.addAll(availableArguments, arguments);
+        setNamedArguments(namedArguments, instance, availableArguments);
+        setPositionalArguments(positionalArguments, instance, availableArguments);
     }
 
-    private <T> void setPositionalArguments(List<Field> positionalArguments, T instance) {
+    private <T> void setNamedArguments(List<Field> namedArguments, T instance, List<String> availableArguments) {
+        namedArguments.forEach(namedArgument -> {
+            NamedArgument annotation = namedArgument.getAnnotation(NamedArgument.class);
+            Optional<String> argumentValue = availableArguments
+                    .stream()
+                    .filter(arg -> arg.startsWith(annotation.name() + annotation.separator()) || Arrays.stream(annotation.aliases()).anyMatch(alias -> arg.startsWith(alias + annotation.separator())))
+                    .findFirst();
+            if (argumentValue.isPresent()) {
+                String keyValue = argumentValue.get();
+                String[] value = keyValue.split(Pattern.quote(annotation.separator()), 2);
+                setField(namedArgument, instance, value[1], annotation.adapter());
+                availableArguments.remove(keyValue);
+            } else {
+                if (annotation.required()) {
+                    throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + " of class " + instance.getClass().getName() + ". No matching argument was found in the command line.");
+                } else if (!Constants.NO_VALUE.equals(annotation.defaultValue())) {
+                    setField(namedArgument, instance, annotation.defaultValue(), annotation.adapter());
+                }
+            }
+        });
+    }
+
+    private <T> void setPositionalArguments(List<Field> positionalArguments, T instance, List<String> availableArguments) {
         positionalArguments.sort(Comparator.comparingInt(field -> field.getAnnotation(PositionalArgument.class).position()));
         ensureOptionalPositionalArgumentsPlacement(positionalArguments);
         positionalArguments.forEach(positionalArgument -> {
             PositionalArgument annotation = positionalArgument.getAnnotation(PositionalArgument.class);
             try {
-                setField(positionalArgument, instance, arguments[annotation.position()], annotation.adapter());
-            } catch (ArrayIndexOutOfBoundsException e) {
+                setField(positionalArgument, instance, availableArguments.get(annotation.position()), annotation.adapter());
+            } catch (IndexOutOfBoundsException e) {
                 if (annotation.required()) {
                     throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + " of class " + instance.getClass().getName() + ". Not enough arguments were provided", e);
                 } else if (!Constants.NO_VALUE.equals(annotation.defaultValue())) {

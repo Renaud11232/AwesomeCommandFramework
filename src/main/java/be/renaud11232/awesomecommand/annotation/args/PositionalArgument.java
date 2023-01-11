@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to describe a field containing the value of a positional command argument.
- * The {@link String} value of the argument will then be converted using the {@link PositionalArgument#adapter} is needed.
+ * The {@link String} value of the argument will then be converted using the {@link PositionalArgument#adapter} if needed.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -33,7 +33,7 @@ public @interface PositionalArgument {
     /**
      * The default value to use if the argument was not provided.
      * If required, the corresponding {@link PositionalArgument#adapter} will be used to convert the argument to the correct
-     * type.
+     * type. A special value of {@link Constants#NO_VALUE} is used to indicate no default value.
      *
      * @return the default value
      */
