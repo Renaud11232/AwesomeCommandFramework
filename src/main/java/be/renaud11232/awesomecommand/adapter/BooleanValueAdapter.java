@@ -14,6 +14,7 @@ public class BooleanValueAdapter implements ArgumentValueAdapter<Boolean> {
      * @param value the {@link String} value to convert
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Boolean}
+     * @see Boolean#parseBoolean(String)
      */
     @Override
     public Boolean apply(String value, Field field) {

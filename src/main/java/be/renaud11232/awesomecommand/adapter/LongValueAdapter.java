@@ -15,6 +15,7 @@ public class LongValueAdapter implements ArgumentValueAdapter<Long> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Long}
      * @throws NumberFormatException if the string does not contain a parsable {@link Long}
+     * @see Long#parseLong(String)
      */
     @Override
     public Long apply(String value, Field field) throws NumberFormatException {

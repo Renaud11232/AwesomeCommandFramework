@@ -16,6 +16,7 @@ public class DoubleValueAdapter implements ArgumentValueAdapter<Double> {
      * @return the converted {@link Double}
      * @throws NumberFormatException if the string does not contain a parsable {@link Double}
      * @throws NullPointerException  if the value is null
+     * @see Double#parseDouble(String)
      */
     @Override
     public Double apply(String value, Field field) throws NumberFormatException, NullPointerException {

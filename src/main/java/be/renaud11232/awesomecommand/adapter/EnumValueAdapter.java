@@ -15,6 +15,7 @@ public class EnumValueAdapter implements ArgumentValueAdapter<Enum<?>> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Enum} value
      * @throws IllegalArgumentException if the enum type of the {@link Field} has no constant with the specified name, or the specified class object does not represent an enum type
+     * @see Enum#valueOf(Class, String)
      */
     @Override
     @SuppressWarnings("unchecked,rawtypes")

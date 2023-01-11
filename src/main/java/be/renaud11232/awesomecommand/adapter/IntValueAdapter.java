@@ -15,6 +15,7 @@ public class IntValueAdapter implements ArgumentValueAdapter<Integer> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Integer}
      * @throws NumberFormatException if the string does not contain a parsable {@link Integer}
+     * @see Integer#parseInt(String)
      */
     @Override
     public Integer apply(String value, Field field) throws NumberFormatException {

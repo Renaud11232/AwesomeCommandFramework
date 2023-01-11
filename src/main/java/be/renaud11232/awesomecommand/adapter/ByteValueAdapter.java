@@ -15,6 +15,7 @@ public class ByteValueAdapter implements ArgumentValueAdapter<Byte> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Byte}
      * @throws NumberFormatException if the string does not contain a parsable {@link Byte}
+     * @see Byte#parseByte(String)
      */
     @Override
     public Byte apply(String value, Field field) throws NumberFormatException {

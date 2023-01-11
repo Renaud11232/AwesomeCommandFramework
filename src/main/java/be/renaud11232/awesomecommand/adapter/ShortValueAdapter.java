@@ -15,6 +15,7 @@ public class ShortValueAdapter implements ArgumentValueAdapter<Short> {
      * @param field the {@link Field} that the converted value will be assigned to
      * @return the converted {@link Short}
      * @throws NumberFormatException if the string does not contain a parsable {@link Short}
+     * @see Short#parseShort(String)
      */
     @Override
     public Short apply(String value, Field field) throws NumberFormatException {

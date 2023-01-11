@@ -24,6 +24,17 @@ public final class DefaultArgumentValueAdapter implements ArgumentValueAdapter<O
      * @throws NullPointerException            if the value is null
      * @throws UnsupportedTypeAdapterException if the type of the {@link Field} is incompatible with all supported types.
      * @throws IllegalArgumentException        if the string cannot be parsed to the desired {@link Field} type
+     * @see EnumValueAdapter#apply(String, Field)
+     * @see ByteValueAdapter#apply(String, Field)
+     * @see CharValueAdapter#apply(String, Field)
+     * @see ShortValueAdapter#apply(String, Field)
+     * @see ShortValueAdapter#apply(String, Field)
+     * @see IntValueAdapter#apply(String, Field)
+     * @see LongValueAdapter#apply(String, Field)
+     * @see FloatValueAdapter#apply(String, Field)
+     * @see DoubleValueAdapter#apply(String, Field)
+     * @see BooleanValueAdapter#apply(String, Field)
+     * @see PlayerValueAdapter#apply(String, Field)
      */
     @Override
     public Object apply(String value, Field field) throws UnsupportedTypeAdapterException, NumberFormatException, NullPointerException {

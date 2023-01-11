@@ -16,6 +16,7 @@ public class FloatValueAdapter implements ArgumentValueAdapter<Float> {
      * @return the converted {@link Float}
      * @throws NumberFormatException if the string does not contain a parsable {@link Float}
      * @throws NullPointerException  if the value is null
+     * @see Float#parseFloat(String)
      */
     @Override
     public Float apply(String value, Field field) throws NumberFormatException, NullPointerException {
