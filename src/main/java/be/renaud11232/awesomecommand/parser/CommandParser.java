@@ -209,25 +209,21 @@ public class CommandParser {
     }
 
     private <T> void setField(Field field, T instance, String value, Class<? extends ArgumentValueAdapter<?>> adapterType) {
-        if (field.getType().isAssignableFrom(String.class)) {
-            setField(instance, field, value);
-        } else {
-            ArgumentValueAdapter<?> adapter;
-            try {
-                Constructor<? extends ArgumentValueAdapter<?>> constructor = adapterType.getConstructor();
-                constructor.setAccessible(true);
-                adapter = constructor.newInstance();
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
-                     IllegalAccessException e) {
-                throw new CommandParserException("Unable to create instance of " + adapterType.getName(), e);
-            }
-            try {
-                setField(instance, field, adapter.apply(value, field));
-            } catch (UnsupportedTypeAdapterException e) {
-                throw new CommandParserException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName(), e);
-            } catch (IllegalArgumentException e) {
-                throw new InvalidCommandUsageException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName() + ". Argument value was invalid", e);
-            }
+        ArgumentValueAdapter<?> adapter;
+        try {
+            Constructor<? extends ArgumentValueAdapter<?>> constructor = adapterType.getConstructor();
+            constructor.setAccessible(true);
+            adapter = constructor.newInstance();
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                 IllegalAccessException e) {
+            throw new CommandParserException("Unable to create instance of " + adapterType.getName(), e);
+        }
+        try {
+            setField(instance, field, adapter.apply(value, field));
+        } catch (UnsupportedTypeAdapterException e) {
+            throw new CommandParserException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName(), e);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCommandUsageException("Unable to populate field " + field.getName() + " of class " + instance.getClass().getName() + ". Argument value was invalid", e);
         }
     }
 

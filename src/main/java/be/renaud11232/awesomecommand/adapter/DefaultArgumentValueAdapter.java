@@ -39,7 +39,9 @@ public final class DefaultArgumentValueAdapter implements ArgumentValueAdapter<O
     @Override
     public Object apply(String value, Field field) throws UnsupportedTypeAdapterException, NumberFormatException, NullPointerException {
         Class<?> fieldType = field.getType();
-        if (fieldType.isEnum()) {
+        if (fieldType.isAssignableFrom(String.class)) {
+            return value;
+        } else if (fieldType.isEnum()) {
             return new EnumValueAdapter().apply(value, field);
         } else if (fieldType.isAssignableFrom(byte.class) || fieldType.isAssignableFrom(Byte.class)) {
             return new ByteValueAdapter().apply(value, field);
