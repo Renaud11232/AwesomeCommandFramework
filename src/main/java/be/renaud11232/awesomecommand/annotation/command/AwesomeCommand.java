@@ -3,7 +3,7 @@ package be.renaud11232.awesomecommand.annotation.command;
 import java.lang.annotation.*;
 
 /**
- * Annotation used to describe a command specification
+ * Annotation used to describe a command specification.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

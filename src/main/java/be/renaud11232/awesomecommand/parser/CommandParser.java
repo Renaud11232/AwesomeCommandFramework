@@ -102,7 +102,7 @@ public class CommandParser {
         try {
             Constructor<?> constructor = commandSpecification.getConstructor();
             AwesomeCommandExecutor commandExecutor = (AwesomeCommandExecutor) constructor.newInstance();
-            populateInstance(commandExecutor);
+            populateInstance(commandExecutor, false);
             return commandExecutor;
         } catch (InvalidCommandUsageException e) {
             throw e;
@@ -127,7 +127,7 @@ public class CommandParser {
         try {
             Constructor<?> constructor = commandSpecification.getConstructor();
             AwesomeTabCompleter tabCompleter = (AwesomeTabCompleter) constructor.newInstance();
-            populateInstance(tabCompleter);
+            populateInstance(tabCompleter, true);
             return tabCompleter;
         } catch (InvalidCommandUsageException e) {
             throw e;
@@ -138,7 +138,7 @@ public class CommandParser {
         }
     }
 
-    private <T> void populateInstance(T instance) {
+    private <T> void populateInstance(T instance, boolean ignoreMissingArguments) {
         List<Field> positionalArguments = new ArrayList<>();
         List<Field> namedArguments = new ArrayList<>();
         for (Field field : instance.getClass().getDeclaredFields()) {
@@ -161,11 +161,11 @@ public class CommandParser {
         }
         List<String> availableArguments = new LinkedList<>();
         Collections.addAll(availableArguments, arguments);
-        setNamedArguments(namedArguments, instance, availableArguments);
-        setPositionalArguments(positionalArguments, instance, availableArguments);
+        setNamedArguments(namedArguments, instance, availableArguments, ignoreMissingArguments);
+        setPositionalArguments(positionalArguments, instance, availableArguments, ignoreMissingArguments);
     }
 
-    private <T> void setNamedArguments(List<Field> namedArguments, T instance, List<String> availableArguments) {
+    private <T> void setNamedArguments(List<Field> namedArguments, T instance, List<String> availableArguments, boolean ignoreMissingArguments) {
         namedArguments.forEach(namedArgument -> {
             NamedArgument annotation = namedArgument.getAnnotation(NamedArgument.class);
             Optional<String> argumentValue = availableArguments
@@ -179,7 +179,9 @@ public class CommandParser {
                 availableArguments.remove(keyValue);
             } else {
                 if (annotation.required()) {
-                    throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + " of class " + instance.getClass().getName() + ". No matching argument was found in the command line.");
+                    if (!ignoreMissingArguments) {
+                        throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + " of class " + instance.getClass().getName() + ". No matching argument was found in the command line.");
+                    }
                 } else if (!Constants.NO_VALUE.equals(annotation.defaultValue())) {
                     setField(namedArgument, instance, annotation.defaultValue(), annotation.adapter());
                 }
@@ -187,7 +189,7 @@ public class CommandParser {
         });
     }
 
-    private <T> void setPositionalArguments(List<Field> positionalArguments, T instance, List<String> availableArguments) {
+    private <T> void setPositionalArguments(List<Field> positionalArguments, T instance, List<String> availableArguments, boolean ignoreMissingArguments) {
         positionalArguments.sort(Comparator.comparingInt(field -> field.getAnnotation(PositionalArgument.class).position()));
         ensureOptionalPositionalArgumentsPlacement(positionalArguments);
         positionalArguments.forEach(positionalArgument -> {
@@ -196,7 +198,9 @@ public class CommandParser {
                 setField(positionalArgument, instance, availableArguments.get(annotation.position()), annotation.adapter());
             } catch (IndexOutOfBoundsException e) {
                 if (annotation.required()) {
-                    throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + " of class " + instance.getClass().getName() + ". Not enough arguments were provided", e);
+                    if (!ignoreMissingArguments) {
+                        throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + " of class " + instance.getClass().getName() + ". Not enough arguments were provided", e);
+                    }
                 } else if (!Constants.NO_VALUE.equals(annotation.defaultValue())) {
                     setField(positionalArgument, instance, annotation.defaultValue(), annotation.adapter());
                 }
