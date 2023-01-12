@@ -126,4 +126,23 @@ public class ComplexCommand extends Command {
             return Collections.emptyList();
         }
     }
+
+    /**
+     * Returns a {@link CommandExecutor} that executes this command
+     *
+     * @return the {@link CommandExecutor}
+     */
+    public CommandExecutor getCommandExecutor() {
+        return (commandSender, command, alias, args) -> execute(commandSender, alias, args);
+    }
+
+    /**
+     * Returns a {@link TabCompleter} that gives the list of possible completions for this command
+     *
+     * @return the {@link TabCompleter}
+     */
+    public TabCompleter getTabCompleter() {
+        return (commandSender, command, alias, args) -> tabComplete(commandSender, alias, args);
+    }
+
 }

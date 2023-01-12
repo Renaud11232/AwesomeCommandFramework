@@ -25,8 +25,8 @@ public abstract class AwesomePlugin extends JavaPlugin {
         AwesomeCommand annotation = AnnotationUtil.getCommandAnnotation(commandClass);
         PluginCommand pluginCommand = getCommand(annotation.name());
         ComplexCommand awesomeCommand = new ComplexCommand(commandClass);
-        pluginCommand.setExecutor((commandSender, command, s, strings) -> awesomeCommand.execute(commandSender, s, strings));
-        pluginCommand.setTabCompleter((commandSender, command, s, strings) -> awesomeCommand.tabComplete(commandSender, s, strings));
+        pluginCommand.setExecutor(awesomeCommand.getCommandExecutor());
+        pluginCommand.setTabCompleter(awesomeCommand.getTabCompleter());
     }
 
 }
