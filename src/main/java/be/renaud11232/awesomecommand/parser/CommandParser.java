@@ -211,7 +211,7 @@ public class CommandParser {
     private <T> void setField(Field field, T instance, String value, Class<? extends ArgumentValueAdapter<?>> adapterType) {
         ArgumentValueAdapter<?> adapter;
         try {
-            Constructor<? extends ArgumentValueAdapter<?>> constructor = adapterType.getConstructor();
+            Constructor<? extends ArgumentValueAdapter<?>> constructor = adapterType.getDeclaredConstructor();
             constructor.setAccessible(true);
             adapter = constructor.newInstance();
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
