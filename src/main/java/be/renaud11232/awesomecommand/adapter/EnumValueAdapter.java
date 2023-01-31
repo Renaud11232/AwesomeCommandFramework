@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link EnumValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Enum} type.
  */
-public class EnumValueAdapter implements ArgumentValueAdapter<Enum<?>> {
+public class EnumValueAdapter implements SingleArgumentValueAdapter<Enum<?>> {
 
     /**
      * Converts the provided {@link String} value to an {@link Enum} value in order to assign to a provided {@link Field}
@@ -19,7 +20,7 @@ public class EnumValueAdapter implements ArgumentValueAdapter<Enum<?>> {
      */
     @Override
     @SuppressWarnings("unchecked,rawtypes")
-    public Enum<?> apply(String value, Field field) throws IllegalArgumentException {
-        return Enum.valueOf((Class<? extends Enum>) field.getType(), value);
+    public Enum<?> apply(Type type, String value) throws IllegalArgumentException {
+        return Enum.valueOf((Class<? extends Enum>) type, value);
     }
 }

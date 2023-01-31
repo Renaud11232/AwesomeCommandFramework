@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link FloatValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Float} compatible type
  */
-public class FloatValueAdapter implements ArgumentValueAdapter<Float> {
+public class FloatValueAdapter implements SingleArgumentValueAdapter<Float> {
 
     /**
      * Converts the provided {@link String} value to a {@link Float} in order to assign to a provided {@link Field}
@@ -19,7 +20,7 @@ public class FloatValueAdapter implements ArgumentValueAdapter<Float> {
      * @see Float#parseFloat(String)
      */
     @Override
-    public Float apply(String value, Field field) throws NumberFormatException, NullPointerException {
+    public Float apply(Type type, String value) throws NumberFormatException, NullPointerException {
         return Float.parseFloat(value);
     }
 }

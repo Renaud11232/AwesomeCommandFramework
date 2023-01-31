@@ -4,12 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link PlayerValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Player} compatible type
  */
-public class PlayerValueAdapter implements ArgumentValueAdapter<Player> {
+public class PlayerValueAdapter implements SingleArgumentValueAdapter<Player> {
 
     /**
      * Converts the provided {@link String} value to a {@link Player} in order to assign to a provided {@link Field}
@@ -20,7 +21,7 @@ public class PlayerValueAdapter implements ArgumentValueAdapter<Player> {
      * @see Bukkit#getPlayer(String)
      */
     @Override
-    public Player apply(String value, Field field) {
+    public Player apply(Type type, String value) {
         return Bukkit.getPlayer(value);
     }
 }

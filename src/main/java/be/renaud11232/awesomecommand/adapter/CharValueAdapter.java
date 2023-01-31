@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link CharValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Character} compatible type
  */
-public class CharValueAdapter implements ArgumentValueAdapter<Character> {
+public class CharValueAdapter implements SingleArgumentValueAdapter<Character> {
 
     /**
      * Converts the provided {@link String} value to a {@link Character} in order to assign to a provided {@link Field}
@@ -17,7 +18,7 @@ public class CharValueAdapter implements ArgumentValueAdapter<Character> {
      * @throws IllegalArgumentException if the string does not contain exactly one character
      */
     @Override
-    public Character apply(String value, Field field) {
+    public Character apply(Type type, String value) {
         if (value.length() != 1) {
             throw new IllegalArgumentException("Argument value '" + value + "' could not be converted into character type");
         }

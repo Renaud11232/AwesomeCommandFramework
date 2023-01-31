@@ -31,14 +31,6 @@ public @interface NamedArgument {
     String[] aliases() default {};
 
     /**
-     * The required property of the argument.
-     * Since the arguments are named, there is no specific order required.
-     *
-     * @return if the argument is required or not
-     */
-    boolean required() default true;
-
-    /**
      * The default value to use if the argument was not provided.
      * If needed, the corresponding {@link NamedArgument#adapter} will be used to convert the argument to the correct
      * type. A special value of {@link Constants#NO_VALUE} is used to indicate no default value.
@@ -63,5 +55,7 @@ public @interface NamedArgument {
      * @return the {@link ArgumentValueAdapter} to use for the type conversion of the command arguments
      */
     Class<? extends ArgumentValueAdapter<?>> adapter() default DefaultArgumentValueAdapter.class;
+
+    String arity() default "1";
 
 }

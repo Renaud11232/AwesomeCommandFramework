@@ -1,6 +1,8 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * The {@link ArgumentValueAdapter} is used to transform the {@link String} arguments before assigning them to a {@link Field}
@@ -17,7 +19,7 @@ public interface ArgumentValueAdapter<T> {
      * @throws UnsupportedTypeAdapterException if this {@link ArgumentValueAdapter} cannot convert the argument to the desired type
      * @throws IllegalArgumentException        if the value was not convertible to the desired type
      */
-    T apply(String value, Field field) throws UnsupportedTypeAdapterException, IllegalArgumentException;
+    T apply(Type type, List<String> values) throws UnsupportedTypeAdapterException, IllegalArgumentException;
 
 
 }

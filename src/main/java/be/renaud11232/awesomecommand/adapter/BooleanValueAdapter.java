@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link BooleanValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Boolean} compatible type
  */
-public class BooleanValueAdapter implements ArgumentValueAdapter<Boolean> {
+public class BooleanValueAdapter implements SingleArgumentValueAdapter<Boolean> {
 
     /**
      * Converts the provided {@link String} value to a {@link Boolean} in order to assign to a provided {@link Field}
@@ -17,7 +18,7 @@ public class BooleanValueAdapter implements ArgumentValueAdapter<Boolean> {
      * @see Boolean#parseBoolean(String)
      */
     @Override
-    public Boolean apply(String value, Field field) {
+    public Boolean apply(Type type, String value) {
         return Boolean.parseBoolean(value);
     }
 }

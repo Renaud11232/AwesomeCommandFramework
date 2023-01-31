@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link ByteValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Byte} compatible type
  */
-public class ByteValueAdapter implements ArgumentValueAdapter<Byte> {
+public class ByteValueAdapter implements SingleArgumentValueAdapter<Byte> {
 
     /**
      * Converts the provided {@link String} value to a {@link Byte} in order to assign to a provided {@link Field}
@@ -18,7 +19,7 @@ public class ByteValueAdapter implements ArgumentValueAdapter<Byte> {
      * @see Byte#parseByte(String)
      */
     @Override
-    public Byte apply(String value, Field field) throws NumberFormatException {
+    public Byte apply(Type type, String value) throws NumberFormatException {
         return Byte.parseByte(value);
     }
 }

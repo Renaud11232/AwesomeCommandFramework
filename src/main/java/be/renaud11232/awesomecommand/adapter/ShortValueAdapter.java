@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link ShortValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Short} compatible type
  */
-public class ShortValueAdapter implements ArgumentValueAdapter<Short> {
+public class ShortValueAdapter implements SingleArgumentValueAdapter<Short> {
 
     /**
      * Converts the provided {@link String} value to a {@link Short} in order to assign to a provided {@link Field}
@@ -18,7 +19,7 @@ public class ShortValueAdapter implements ArgumentValueAdapter<Short> {
      * @see Short#parseShort(String)
      */
     @Override
-    public Short apply(String value, Field field) throws NumberFormatException {
+    public Short apply(Type type, String value) throws NumberFormatException {
         return Short.parseShort(value);
     }
 }

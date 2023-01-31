@@ -1,0 +1,1 @@
+package be.renaud11232.awesomecommand.arity;

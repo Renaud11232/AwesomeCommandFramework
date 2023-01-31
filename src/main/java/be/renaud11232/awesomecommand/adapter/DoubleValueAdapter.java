@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link DoubleValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Double} compatible type
  */
-public class DoubleValueAdapter implements ArgumentValueAdapter<Double> {
+public class DoubleValueAdapter implements SingleArgumentValueAdapter<Double> {
 
     /**
      * Converts the provided {@link String} value to a {@link Double} in order to assign to a provided {@link Field}
@@ -19,7 +20,7 @@ public class DoubleValueAdapter implements ArgumentValueAdapter<Double> {
      * @see Double#parseDouble(String)
      */
     @Override
-    public Double apply(String value, Field field) throws NumberFormatException, NullPointerException {
+    public Double apply(Type type, String value) throws NumberFormatException, NullPointerException {
         return Double.parseDouble(value);
     }
 }

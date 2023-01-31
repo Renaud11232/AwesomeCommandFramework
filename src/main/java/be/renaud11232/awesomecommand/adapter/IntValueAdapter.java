@@ -1,12 +1,13 @@
 package be.renaud11232.awesomecommand.adapter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 /**
  * The {@link IntValueAdapter} class is used to transform the {@link String} arguments before assigning them to a
  * {@link Field} of {@link Integer} compatible type
  */
-public class IntValueAdapter implements ArgumentValueAdapter<Integer> {
+public class IntValueAdapter implements SingleArgumentValueAdapter<Integer> {
 
     /**
      * Converts the provided {@link String} value to a {@link Integer} in order to assign to a provided {@link Field}
@@ -18,7 +19,7 @@ public class IntValueAdapter implements ArgumentValueAdapter<Integer> {
      * @see Integer#parseInt(String)
      */
     @Override
-    public Integer apply(String value, Field field) throws NumberFormatException {
+    public Integer apply(Type type, String value) throws NumberFormatException {
         return Integer.parseInt(value);
     }
 }
