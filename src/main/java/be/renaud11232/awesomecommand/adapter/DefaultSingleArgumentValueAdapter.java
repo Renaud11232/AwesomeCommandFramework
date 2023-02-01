@@ -4,6 +4,10 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
 
+/**
+ * The {@link DefaultSingleArgumentValueAdapter} class is used to transform a single {@link String} argument before
+ * assigning it to a compatible {@link Type}
+ */
 public final class DefaultSingleArgumentValueAdapter implements SingleArgumentValueAdapter<Object> {
 
     private final StringValueAdapter stringValueAdapter = new StringValueAdapter();
@@ -18,6 +22,26 @@ public final class DefaultSingleArgumentValueAdapter implements SingleArgumentVa
     private final BooleanValueAdapter booleanValueAdapter = new BooleanValueAdapter();
     private final PlayerValueAdapter playerValueAdapter = new PlayerValueAdapter();
 
+    /**
+     * Converts the provided {@link String} value to a compatible {@link Type}.
+     *
+     * @param type  the target {@link Type} that the converted value will be assigned to
+     * @param value {@link String} value to convert
+     * @return the converted value
+     * @throws UnsupportedTypeAdapterException if this {@link ArgumentValueAdapter} cannot convert the arguments to the desired {@link Type}
+     * @throws IllegalArgumentException        if the value was not convertible to the desired {@link Type}
+     * @see StringValueAdapter#apply(Type, String)
+     * @see EnumValueAdapter#apply(Type, String)
+     * @see ByteValueAdapter#apply(Type, String)
+     * @see CharValueAdapter#apply(Type, String)
+     * @see ShortValueAdapter#apply(Type, String)
+     * @see IntValueAdapter#apply(Type, String)
+     * @see LongValueAdapter#apply(Type, String)
+     * @see FloatValueAdapter#apply(Type, String)
+     * @see DoubleValueAdapter#apply(Type, String)
+     * @see BooleanValueAdapter#apply(Type, String)
+     * @see PlayerValueAdapter#apply(Type, String)
+     */
     @Override
     public Object apply(Type type, String value) throws UnsupportedTypeAdapterException, IllegalArgumentException {
         Class<?> targetClass = (Class<?>) type;

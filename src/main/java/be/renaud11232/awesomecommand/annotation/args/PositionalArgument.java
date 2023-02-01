@@ -39,5 +39,10 @@ public @interface PositionalArgument {
      */
     Class<? extends ArgumentValueAdapter<?>> adapter() default DefaultArgumentValueAdapter.class;
 
+    /**
+     * The {@link String} representation of the argument {@link be.renaud11232.awesomecommand.arity.Arity}
+     *
+     * @return the arity of the argument
+     */
     String arity() default "1";
 }

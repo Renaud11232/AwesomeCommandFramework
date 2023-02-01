@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
@@ -177,10 +178,11 @@ public class CommandParser {
                     .stream()
                     .filter(arg -> arg.startsWith(annotation.name() + annotation.separator()) || Arrays.stream(annotation.aliases()).anyMatch(alias -> arg.startsWith(alias + annotation.separator())))
                     .peek(argument -> {
-                        String[] nameAndValue = argument.split(Pattern.quote(annotation.separator()), 2);
+                        Stream<String> possibleNames = Stream.concat(Stream.of(annotation.name()), Arrays.stream(annotation.aliases()));
+                        String regex = "(" + possibleNames.map(Pattern::quote).collect(Collectors.joining("|")) + ":?)" + Pattern.quote(annotation.separator());
+                        String[] nameAndValue = argument.split(regex, 2);
                         values.add(nameAndValue[1]);
-                    })
-                    .collect(Collectors.toList());
+                    }).collect(Collectors.toList());
             availableArguments.removeAll(matchedArguments);
             if (arity.hasMax() && matchedArguments.size() > arity.getMaximum()) {
                 throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + ". Too many arguments provided : Expected at most " + arity.getMaximum() + " and got " + matchedArguments.size());
@@ -297,7 +299,7 @@ public class CommandParser {
                 throw new CommandParserException("Incorrect positional argument position : " + previousArgument.getName() + " and " + positionalArgument.getName() + " are both at position " + previousArgumentPosition + " in class " + positionalArgument.getDeclaringClass().getName());
             }
             Arity arity = parseArity(annotation, positionalArgument);
-            if (arity.isFixed()) {
+            if (arity.hasMax() && arity.getMinimum() == arity.getMinimum()) {
                 if (lastVariableSizeArgument != null) {
                     throw new CommandParserException("Incorrect positional argument order : Fixed arity positional argument " + positionalArgument.getName() + " found after variable arity positional argument " + lastVariableSizeArgument.getName() + " in class " + positionalArgument.getDeclaringClass().getName());
                 }
