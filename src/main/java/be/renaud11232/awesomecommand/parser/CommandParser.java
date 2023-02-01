@@ -18,8 +18,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The {@link CommandParser} class allows to transform a command specification to {@link AwesomeTabCompleter} and {@link AwesomeCommandExecutor}
@@ -166,9 +166,6 @@ public class CommandParser {
         Collections.addAll(availableArguments, arguments);
         setNamedArguments(namedArguments, instance, availableArguments, ignoreMissingArguments);
         setPositionalArguments(positionalArguments, instance, availableArguments, ignoreMissingArguments);
-        if (!availableArguments.isEmpty()) {
-            throw new InvalidCommandUsageException("Unable to populate instance : Too many arguments provided");
-        }
     }
 
     private <T> void setNamedArguments(List<Field> namedArguments, T instance, List<String> availableArguments, boolean ignoreMissingArguments) {
@@ -176,31 +173,19 @@ public class CommandParser {
             List<String> values = new LinkedList<>();
             NamedArgument annotation = namedArgument.getAnnotation(NamedArgument.class);
             Arity arity = parseArity(annotation, namedArgument);
-            Predicate<String> matchesNamedArgument = arg -> arg.startsWith(annotation.name() + annotation.separator()) || Arrays.stream(annotation.aliases()).anyMatch(alias -> arg.startsWith(alias + annotation.separator()));
-            long argumentCount = availableArguments.stream()
-                    .filter(matchesNamedArgument)
+            List<String> matchedArguments = availableArguments
+                    .stream()
+                    .filter(arg -> arg.startsWith(annotation.name() + annotation.separator()) || Arrays.stream(annotation.aliases()).anyMatch(alias -> arg.startsWith(alias + annotation.separator())))
                     .peek(argument -> {
                         String[] nameAndValue = argument.split(Pattern.quote(annotation.separator()), 2);
                         values.add(nameAndValue[1]);
-                    }).count();
-            availableArguments.removeIf(matchesNamedArgument);
-            if (arity.hasMax() && argumentCount > arity.getMaximum()) {
-                throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + ". Too many arguments provided : Expected at most " + arity.getMaximum() + " and got " + argumentCount);
+                    })
+                    .collect(Collectors.toList());
+            availableArguments.removeAll(matchedArguments);
+            if (arity.hasMax() && matchedArguments.size() > arity.getMaximum()) {
+                throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + ". Too many arguments provided : Expected at most " + arity.getMaximum() + " and got " + matchedArguments.size());
             }
-            if (argumentCount < arity.getMinimum() && !ignoreMissingArguments) {
-                if (Constants.NO_VALUE.equals(annotation.defaultValue())) {
-                    throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + ". Not enough arguments provided : Expected at least " + arity.getMinimum() + " and got " + argumentCount);
-                } else {
-                    String[] defaultValues = new CommandTokenizer(annotation.defaultValue()).tokenize();
-                    if (arity.getMinimum() > defaultValues.length) {
-                        throw new CommandParserException("Unable to populate field " + namedArgument.getName() + ". Default value does not have enough arguments : Expected at least " + arity.getMinimum() + " and got " + defaultValues.length);
-                    }
-                    if (arity.hasMax() && arity.getMaximum() < defaultValues.length) {
-                        throw new CommandParserException("Unable to populate field " + namedArgument.getName() + ". Default value have too many arguments : Expected at most " + arity.getMinimum() + " and got " + defaultValues.length);
-                    }
-                    values.addAll(Arrays.asList(defaultValues).subList(values.size(), defaultValues.length));
-                }
-            }
+            handleNotEnoughArguments(namedArgument, matchedArguments, arity, ignoreMissingArguments, values, annotation.defaultValue());
             setField(namedArgument, instance, values, annotation.adapter());
         });
     }
@@ -220,22 +205,26 @@ public class CommandParser {
             }
             availableArguments.removeAll(matchedArguments);
             List<String> values = new LinkedList<>(matchedArguments);
-            if (matchedArguments.size() < arity.getMinimum() && !ignoreMissingArguments) {
-                if (Constants.NO_VALUE.equals(annotation.defaultValue())) {
-                    throw new InvalidCommandUsageException("Unable to populate field " + positionalArgument.getName() + ". Not enough arguments provided : Expected at least " + arity.getMinimum() + " and got " + matchedArguments.size());
-                } else {
-                    String[] defaultValues = new CommandTokenizer(annotation.defaultValue()).tokenize();
-                    if (arity.getMinimum() > defaultValues.length) {
-                        throw new CommandParserException("Unable to populate field " + positionalArgument.getName() + ". Default value does not have enough arguments : Expected at least " + arity.getMinimum() + " and got " + defaultValues.length);
-                    }
-                    if (arity.hasMax() && arity.getMaximum() < defaultValues.length) {
-                        throw new CommandParserException("Unable to populate field " + positionalArgument.getName() + ". Default value have too many arguments : Expected at most " + arity.getMinimum() + " and got " + defaultValues.length);
-                    }
-                    values.addAll(Arrays.asList(defaultValues).subList(values.size(), defaultValues.length));
-                }
-            }
+            handleNotEnoughArguments(positionalArgument, matchedArguments, arity, ignoreMissingArguments, values, annotation.defaultValue());
             setField(positionalArgument, instance, values, annotation.adapter());
         });
+    }
+
+    private void handleNotEnoughArguments(Field argumentField, List<String> matchedArguments, Arity arity, boolean ignoreMissingArguments, List<String> values, String defaultValue) {
+        if (matchedArguments.size() < arity.getMinimum() && !ignoreMissingArguments) {
+            if (Constants.NO_VALUE.equals(defaultValue)) {
+                throw new InvalidCommandUsageException("Unable to populate field " + argumentField.getName() + ". Not enough arguments provided : Expected at least " + arity.getMinimum() + " and got " + matchedArguments.size());
+            } else {
+                String[] defaultValues = new CommandTokenizer(defaultValue).tokenize();
+                if (arity.getMinimum() > defaultValues.length) {
+                    throw new CommandParserException("Unable to populate field " + argumentField.getName() + ". Default value does not have enough arguments : Expected at least " + arity.getMinimum() + " and got " + defaultValues.length);
+                }
+                if (arity.hasMax() && arity.getMaximum() < defaultValues.length) {
+                    throw new CommandParserException("Unable to populate field " + argumentField.getName() + ". Default value have too many arguments : Expected at most " + arity.getMinimum() + " and got " + defaultValues.length);
+                }
+                values.addAll(Arrays.asList(defaultValues).subList(values.size(), defaultValues.length));
+            }
+        }
     }
 
     private <T> void setField(Field field, T instance, List<String> values, Class<? extends ArgumentValueAdapter<?>> adapterClass) {
