@@ -18,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -174,15 +175,15 @@ public class CommandParser {
             List<String> values = new LinkedList<>();
             NamedArgument annotation = namedArgument.getAnnotation(NamedArgument.class);
             Arity arity = parseArity(annotation, namedArgument);
-            List<String> matchedArguments = availableArguments
-                    .stream()
-                    .filter(arg -> arg.startsWith(annotation.name() + annotation.separator()) || Arrays.stream(annotation.aliases()).anyMatch(alias -> arg.startsWith(alias + annotation.separator())))
-                    .peek(argument -> {
-                        Stream<String> possibleNames = Stream.concat(Stream.of(annotation.name()), Arrays.stream(annotation.aliases()));
-                        String regex = "(" + possibleNames.map(Pattern::quote).collect(Collectors.joining("|")) + ":?)" + Pattern.quote(annotation.separator());
-                        String[] nameAndValue = argument.split(regex, 2);
-                        values.add(nameAndValue[1]);
-                    }).collect(Collectors.toList());
+            Stream<String> argumentBeginnings = Stream.concat(Stream.of(annotation.name()), Arrays.stream(annotation.aliases()));
+            String namedArgumentRegex = String.format("^(?:%s)%s(.*)$", argumentBeginnings.map(Pattern::quote).collect(Collectors.joining("|")), Pattern.quote(annotation.separator()));
+            Pattern namedArgumentPattern = Pattern.compile(namedArgumentRegex);
+            List<String> matchedArguments = availableArguments.stream()
+                    .map(namedArgumentPattern::matcher)
+                    .filter(Matcher::find)
+                    .map(m -> m.group(1))
+                    .peek(values::add)
+                    .collect(Collectors.toList());
             availableArguments.removeAll(matchedArguments);
             if (arity.hasMax() && matchedArguments.size() > arity.getMaximum()) {
                 throw new InvalidCommandUsageException("Unable to populate field " + namedArgument.getName() + ". Too many arguments provided : Expected at most " + arity.getMaximum() + " and got " + matchedArguments.size());
