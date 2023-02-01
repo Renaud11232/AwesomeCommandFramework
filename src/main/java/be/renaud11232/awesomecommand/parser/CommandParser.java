@@ -195,7 +195,7 @@ public class CommandParser {
 
     private <T> void setPositionalArguments(List<Field> positionalArguments, T instance, List<String> availableArguments, boolean ignoreMissingArguments) {
         positionalArguments.sort(Comparator.comparingInt(field -> field.getAnnotation(PositionalArgument.class).position()));
-        ensureOptionalPositionalArgumentsPlacement(positionalArguments);
+        ensurePositionalArgumentsPlacement(positionalArguments);
         positionalArguments.forEach(positionalArgument -> {
             PositionalArgument annotation = positionalArgument.getAnnotation(PositionalArgument.class);
             Arity arity = parseArity(annotation, positionalArgument);
@@ -290,8 +290,8 @@ public class CommandParser {
         }
     }
 
-    private void ensureOptionalPositionalArgumentsPlacement(List<Field> positionalArguments) {
-        Field lastVariableSizeArgument = null;
+    private void ensurePositionalArgumentsPlacement(List<Field> positionalArguments) {
+        Field lastInfiniteArgument = null;
         Field previousArgument = null;
         Integer previousArgumentPosition = null;
         for (Field positionalArgument : positionalArguments) {
@@ -300,15 +300,15 @@ public class CommandParser {
                 throw new CommandParserException("Incorrect positional argument position : " + previousArgument.getName() + " and " + positionalArgument.getName() + " are both at position " + previousArgumentPosition + " in class " + positionalArgument.getDeclaringClass().getName());
             }
             Arity arity = parseArity(annotation, positionalArgument);
-            if (arity.hasMax() && arity.getMinimum() == arity.getMinimum()) {
-                if (lastVariableSizeArgument != null) {
-                    throw new CommandParserException("Incorrect positional argument order : Fixed arity positional argument " + positionalArgument.getName() + " found after variable arity positional argument " + lastVariableSizeArgument.getName() + " in class " + positionalArgument.getDeclaringClass().getName());
+            if (arity.hasMax()) {
+                if (lastInfiniteArgument != null) {
+                    throw new CommandParserException("Incorrect positional argument order : Finite arity positional argument " + positionalArgument.getName() + " found after infinite arity positional argument " + lastInfiniteArgument.getName() + " in class " + positionalArgument.getDeclaringClass().getName());
                 }
             } else {
-                if (lastVariableSizeArgument != null) {
-                    throw new CommandParserException("Incorrect positional argument usage : Multiple variable arity positional arguments found in class " + positionalArgument.getDeclaringClass().getName() + " : " + lastVariableSizeArgument.getName() + " and " + positionalArgument.getName());
+                if (lastInfiniteArgument != null) {
+                    throw new CommandParserException("Incorrect positional argument usage : Only 1 infinite arity argument can be defined but found " + lastInfiniteArgument.getName() + " and " + positionalArgument.getName() + " in class " + positionalArgument.getDeclaringClass().getName());
                 }
-                lastVariableSizeArgument = positionalArgument;
+                lastInfiniteArgument = positionalArgument;
             }
             previousArgumentPosition = annotation.position();
             previousArgument = positionalArgument;
