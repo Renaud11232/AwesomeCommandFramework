@@ -8,7 +8,6 @@ import be.renaud11232.awesomecommand.annotation.args.*;
 import be.renaud11232.awesomecommand.arity.Arity;
 import be.renaud11232.awesomecommand.arity.InvalidArityException;
 import be.renaud11232.awesomecommand.tokenizer.CommandTokenizer;
-import be.renaud11232.awesomecommand.tokenizer.TokenizerException;
 import be.renaud11232.awesomecommand.util.Constants;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -67,13 +66,14 @@ public class CommandParser {
     }
 
     /**
-     * Sets the label of the parsed command
+     * Sets the labels of the parsed command. If this command is a subcommand, the aliases must be in the same order
+     * they were typed in the command
      *
-     * @param alias the label
+     * @param aliases the labels used for this command
      * @return this {@link CommandParser} for method chaining
      */
-    public CommandParser labelled(String alias) {
-        this.aliases = alias.split(" ");
+    public CommandParser labelled(String[] aliases) {
+        this.aliases = aliases;
         return this;
     }
 
@@ -84,12 +84,8 @@ public class CommandParser {
      * @return this {@link CommandParser} for method chaining
      * @throws InvalidCommandUsageException if the provided command is improperly formatted
      */
-    public CommandParser with(String... arguments) throws InvalidCommandUsageException {
-        try {
-            this.arguments = new CommandTokenizer(arguments).tokenize();
-        } catch (TokenizerException e) {
-            throw new InvalidCommandUsageException(e.getMessage(), e);
-        }
+    public CommandParser with(String... arguments) {
+        this.arguments = arguments;
         return this;
     }
 
