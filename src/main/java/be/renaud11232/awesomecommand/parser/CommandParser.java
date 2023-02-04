@@ -168,6 +168,9 @@ public class CommandParser {
         Collections.addAll(availableArguments, arguments);
         setNamedArguments(namedArguments, instance, availableArguments, ignoreMissingArguments);
         setPositionalArguments(positionalArguments, instance, availableArguments, ignoreMissingArguments);
+        if ((!namedArguments.isEmpty() || !positionalArguments.isEmpty()) && !availableArguments.isEmpty()) {
+            throw new InvalidCommandUsageException("Too many arguments provided : " + availableArguments.size() + " argument could not be parsed.");
+        }
     }
 
     private <T> void setNamedArguments(List<Field> namedArguments, T instance, List<String> availableArguments, boolean ignoreMissingArguments) {
