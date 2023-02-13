@@ -17,10 +17,15 @@ public class PlayerValueAdapter implements SingleArgumentValueAdapter<Player> {
      * @param type  the target {@link Type} that the converted value will be assigned to
      * @param value the {@link String} value to convert
      * @return the converted {@link Player}
+     * @throws IllegalArgumentException if the player could not be found
      * @see Bukkit#getPlayer(String)
      */
     @Override
-    public Player apply(Type type, String value) {
+    public Player apply(Type type, String value) throws IllegalArgumentException {
+        Player player = Bukkit.getPlayer(value);
+        if (player == null) {
+            throw new IllegalArgumentException("No player matching " + value + " were found");
+        }
         return Bukkit.getPlayer(value);
     }
 }

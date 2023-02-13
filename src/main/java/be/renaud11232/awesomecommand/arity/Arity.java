@@ -37,6 +37,9 @@ public class Arity {
         String maxStr = matcher.group(2);
         if (maxStr == null) {
             max = min;
+            if (max == 0) {
+                throw new InvalidArityException("The implicit maximum cannot be 0");
+            }
         } else {
             if (maxStr.equals("*")) {
                 max = null;
