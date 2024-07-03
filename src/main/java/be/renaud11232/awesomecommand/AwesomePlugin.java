@@ -1,16 +1,19 @@
 package be.renaud11232.awesomecommand;
 
-import be.renaud11232.awesomecommand.annotation.CommandPackage;
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
+import be.renaud11232.awesomecommand.annotation.command.AwesomeCommands;
+import be.renaud11232.awesomecommand.util.AnnotationUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -24,45 +27,21 @@ public abstract class AwesomePlugin extends JavaPlugin {
 
     public AwesomePlugin() {
         super();
-        init();
+        initCommands();
     }
 
     protected AwesomePlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
-        init();
+        initCommands();
     }
 
-    private void init() {
-        CommandPackage commandPackage = getClass().getAnnotation(CommandPackage.class);
-        String packageName;
-        if (commandPackage == null || commandPackage.value().isEmpty()) {
-            packageName = getClass().getPackage().getName();
-        } else {
-            packageName = commandPackage.value();
-        }
-        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(packageName.replaceAll("[.]", "/"))) {
-            if (stream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                Set<Class<?>> foundCommands = reader.lines()
-                        .filter(line -> line.endsWith(".class"))
-                        .map(className -> getClass(className, packageName))
-                        .filter(Objects::nonNull)
-                        .filter(c -> Objects.nonNull(c.getAnnotation(AwesomeCommand.class)))
-                        .collect(Collectors.toSet());
-                foundCommands.stream()
-                        .filter(command -> foundCommands.stream().noneMatch(c -> Arrays.asList(c.getAnnotation(AwesomeCommand.class).subCommands()).contains(command)))
-                        .forEach(command -> commands.put(command.getAnnotation(AwesomeCommand.class).name(), command));
-            }
-        } catch (IOException ignored) {
-        }
-    }
-
-    private Class<?> getClass(String className, String packageName) {
-        try {
-            return Class.forName(packageName + "." + className.substring(0, className.lastIndexOf('.')));
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
+    private void initCommands() {
+        AwesomeCommands awesomeCommands = getClass().getAnnotation(AwesomeCommands.class);
+        Class<?>[] commandClasses = awesomeCommands == null ? new Class<?>[0] : awesomeCommands.value();
+        Arrays.stream(commandClasses).forEach(commandClass -> {
+            AwesomeCommand awesomeCommand = AnnotationUtil.getCommandAnnotation(commandClass);
+            commands.put(awesomeCommand.name(), commandClass);
+        });
     }
 
     @Override
