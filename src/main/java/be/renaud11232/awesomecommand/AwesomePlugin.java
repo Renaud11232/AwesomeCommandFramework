@@ -1,9 +1,16 @@
 package be.renaud11232.awesomecommand;
 
+import be.renaud11232.awesomecommand.annotation.CommandPackage;
 import be.renaud11232.awesomecommand.annotation.command.AwesomeCommand;
-import be.renaud11232.awesomecommand.util.AnnotationUtil;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
+
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -13,20 +20,67 @@ import org.bukkit.plugin.java.JavaPlugin;
 @SuppressWarnings("unused")
 public abstract class AwesomePlugin extends JavaPlugin {
 
-    /**
-     * Initializes a plugin command based on its cammand specification passed as {@link Class} object.
-     * The class must be annotated with the {@link AwesomeCommand} annotation and the name attribute must be the same as the one defined in plugin.yml
-     * Every time the command is executed or a tab completion is requested, an object will be created and used to hold the command parameters.
-     *
-     * @param commandClass the command specification class
-     * @throws NullPointerException if the specified command {@link Class} is null, or does not have the {@link AwesomeCommand} annotation
-     */
-    public void initCommand(Class<?> commandClass) throws NullPointerException {
-        AwesomeCommand annotation = AnnotationUtil.getCommandAnnotation(commandClass);
-        PluginCommand pluginCommand = getCommand(annotation.name());
-        ComplexCommand awesomeCommand = new ComplexCommand(commandClass);
-        pluginCommand.setExecutor(awesomeCommand.getCommandExecutor());
-        pluginCommand.setTabCompleter(awesomeCommand.getTabCompleter());
+    private final Map<String, Class<?>> commands = new HashMap<>();
+
+    public AwesomePlugin() {
+        super();
+        init();
+    }
+
+    protected AwesomePlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+        init();
+    }
+
+    private void init() {
+        CommandPackage commandPackage = getClass().getAnnotation(CommandPackage.class);
+        String packageName;
+        if (commandPackage == null || commandPackage.value().isEmpty()) {
+            packageName = getClass().getPackage().getName();
+        } else {
+            packageName = commandPackage.value();
+        }
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(packageName.replaceAll("[.]", "/"))) {
+            if (stream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                Set<Class<?>> foundCommands = reader.lines()
+                        .filter(line -> line.endsWith(".class"))
+                        .map(className -> getClass(className, packageName))
+                        .filter(Objects::nonNull)
+                        .filter(c -> Objects.nonNull(c.getAnnotation(AwesomeCommand.class)))
+                        .collect(Collectors.toSet());
+                foundCommands.stream()
+                        .filter(command -> foundCommands.stream().noneMatch(c -> Arrays.asList(c.getAnnotation(AwesomeCommand.class).subCommands()).contains(command)))
+                        .forEach(command -> commands.put(command.getAnnotation(AwesomeCommand.class).name(), command));
+            }
+        } catch (IOException ignored) {
+        }
+    }
+
+    private Class<?> getClass(String className, String packageName) {
+        try {
+            return Class.forName(packageName + "." + className.substring(0, className.lastIndexOf('.')));
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (commands.containsKey(command.getName())) {
+            return new ComplexCommand(commands.get(command.getName())).execute(sender, label, args);
+        } else {
+            return super.onCommand(sender, command, label, args);
+        }
+    }
+
+    @Override
+    public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (commands.containsKey(command.getName())) {
+            return new ComplexCommand(commands.get(command.getName())).tabComplete(sender, alias, args);
+        } else {
+            return super.onTabComplete(sender, command, alias, args);
+        }
     }
 
 }
