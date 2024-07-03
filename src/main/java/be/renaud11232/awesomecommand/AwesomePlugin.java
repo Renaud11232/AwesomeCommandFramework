@@ -18,7 +18,8 @@ import java.util.Map;
 
 /**
  * The {@link AwesomePlugin} class is the base class for any plugin that wants to make use of the AwesomeCommandFramework
- * This class is meant to be used the same way as the usual {@link JavaPlugin} class, and just provides one additional utility to initialize commands
+ * This class is meant to be used the same way as the usual {@link JavaPlugin} class, and just automatically registers
+ * subcommands and executes them
  */
 @SuppressWarnings("unused")
 public abstract class AwesomePlugin extends JavaPlugin {
